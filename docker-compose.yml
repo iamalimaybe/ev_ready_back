@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: ev_ready_pg
+    environment:
+      POSTGRES_DB: ev_ready
+      POSTGRES_USER: evready
+      POSTGRES_PASSWORD: evreadypass
+    ports:
+      - "5432:5432"
+    volumes:
+      - ev_ready_pg_data:/var/lib/postgresql/data
+
+volumes:
+  ev_ready_pg_data:

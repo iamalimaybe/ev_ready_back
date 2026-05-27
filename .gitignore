@@ -1,0 +1,81 @@
+HELP.md
+
+### Documentation kept tracked ###
+!README.md
+!AGENTS.md
+!docs/
+!docs/**
+!*.md
+
+### Secrets and local overrides ###
+.env
+!.env.example
+.env.*
+src/main/resources/application-local.yml
+src/main/resources/application-*.local.yml
+src/main/resources/application-secret*.yml
+src/main/resources/application-secrets*.yml
+src/main/resources/application-prod-local.yml
+src/main/resources/application-prod-override.yml
+!src/main/resources/application.yml
+!src/main/resources/application-dev.yml
+!src/main/resources/application-prod.yml
+
+### Logs ###
+logs/
+*.log
+*.log.*
+
+### OS files ###
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+### Local Docker/database volumes ###
+postgres-data/
+pgdata/
+db-data/
+docker-data/
+data/postgres/
+
+### Gradle ###
+.gradle/
+build/
+!backend/gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+### IntelliJ ###
+.idea/

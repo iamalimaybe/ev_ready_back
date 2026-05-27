@@ -1,0 +1,22 @@
+# Decisions
+
+- Backend and frontend are separate repos.
+- Backend first release owns vehicles, chargers, and leads only.
+- Calculators can remain frontend-side where inputs are manual.
+- Keep the XML Liquibase master changelog if it only includes SQL changelog files.
+- Actual schema and seed migrations must be SQL formatted Liquibase files under `db/changelog`.
+- Do not create YAML/XML migrations for actual database changes.
+- Entity primary keys must use `BIGINT` / `Long`, not UUID.
+- Every entity should include audit fields by default.
+- Every entity should include equals and hashCode.
+- Reviews/ratings are deferred until persistence, moderation, and spam handling are planned.
+- Admin UI/auth are deferred.
+- Public frontend-facing read APIs should return active records only; apply `isActive = true` filtering in backend queries for future public reads.
+- First-release public catalog APIs are unauthenticated because vehicle and charger catalog data is public.
+- Frontend clients must not store fixed backend credentials.
+- Lead submission is public for now and relies on validation, consent, a CORS allowlist, and later CAPTCHA/rate limiting.
+- Contact Us submissions are stored separately from Get Help leads to avoid mixing general, business, collaborator, charger provider, or dealer inquiries with EV-help lead reporting.
+- Repositories are owned by their respective services. Cross-entity/service access should go through service methods, not direct repository injection, while actual query definitions remain in repository interfaces.
+- Codex should inspect only the smallest required file set per task to reduce usage.
+- Vehicle and Charger source tracking plus verification status are stored before production seed data so catalog and charger records can avoid unverifiable facts.
+- Source tracking was folded into the local base Vehicle and Charger create migrations before shared deployment to keep initial schema history clean.

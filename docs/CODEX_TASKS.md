@@ -43,6 +43,7 @@
 - Add Minimal Backend Docker Production Deployment Files
 - Document Live Production Deployment State
 - Document Completed VPS Hardening Steps
+- Add Production Smoke Test Checklist
 
 ## Charger Seed Readiness Note
 

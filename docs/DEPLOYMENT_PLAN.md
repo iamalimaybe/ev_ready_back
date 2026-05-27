@@ -94,6 +94,51 @@ EVReady Pakistan is live in production.
 - Daily automated backups are not enabled yet.
 - Logs are app-rolled and are not backups.
 
+## Production Smoke Test Checklist
+
+Public URL checks:
+
+- `https://evready.pk` loads.
+- `https://www.evready.pk` redirects to `https://evready.pk`.
+- `https://api.evready.pk/api/v1/vehicles` returns `200`.
+- `https://api.evready.pk/api/v1/chargers` returns `200`.
+
+Browser checks:
+
+- Home page loads.
+- Vehicle Catalog shows backend data.
+- Charger Directory shows backend data.
+- Get Help page opens.
+- Contact page opens.
+- Browser console has no CORS errors.
+
+Write-flow checks:
+
+- Submit one obvious test Get Help request.
+- Submit one obvious test Contact request.
+- Backend logs show no `500` errors.
+
+Server checks:
+
+- `docker ps` shows backend, frontend, and postgres running.
+- Caddy is active/running.
+- UFW is active.
+- PostgreSQL port `5432` is not public.
+- Backend `8080` and frontend `3000` are not public.
+
+Backup check:
+
+- Run `/opt/evready/scripts/backup-postgres.sh` after successful deployment or smoke test.
+- Confirm backup file exists.
+- Backups are manual for now.
+
+Cloudflare check:
+
+- SSL/TLS mode is Full (strict).
+- Always Use HTTPS is enabled.
+- Automatic HTTPS Rewrites is enabled.
+- DNS records remain DNS-only unless proxy mode is intentionally tested later.
+
 ## Remaining Ops Items
 
 - Automate daily DB backups later.

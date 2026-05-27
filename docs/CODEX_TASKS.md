@@ -36,6 +36,7 @@
 - Configure Production File Log Rolling and Retention
 - Correct Production Logback Rolling Policy Property Name
 - Document Production Deployment Profile, Environment, and Logging Notes
+- Add Production Deployment Planning Checklist
 
 ## Charger Seed Readiness Note
 

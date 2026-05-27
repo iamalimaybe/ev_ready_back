@@ -1,0 +1,39 @@
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ev_ready}
+      POSTGRES_USER: ${DB_USER:?Set DB_USER in the environment}
+      POSTGRES_PASSWORD: ${DB_PASS:?Set DB_PASS in the environment}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SERVER_PORT: ${SERVER_PORT:-8080}
+      DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-ev_ready}
+      DB_USER: ${DB_USER:?Set DB_USER in the environment}
+      DB_PASS: ${DB_PASS:?Set DB_PASS in the environment}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:?Set CORS_ALLOWED_ORIGINS in the environment}
+      LOG_PATH: ${LOG_PATH:-/app/logs}
+    ports:
+      - "127.0.0.1:${SERVER_PORT:-8080}:${SERVER_PORT:-8080}"
+    volumes:
+      - backend_logs:${LOG_PATH:-/app/logs}
+
+volumes:
+  postgres_data:
+  backend_logs:

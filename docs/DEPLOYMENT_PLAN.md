@@ -25,7 +25,26 @@ EVReady Pakistan is live in production.
 - Public ports allowed: `22`, `80`, `443`.
 - Public ports blocked/not exposed: `3000`, `8080`, `5432`.
 - SSH root login is disabled.
+- SSH password login is disabled.
 - Server access uses the `deploy` user.
+
+## Server Hardening Completed
+
+- UFW is enabled.
+- UFW allows only OpenSSH/`22`, `80`, and `443`.
+- Hetzner Cloud Firewall is enabled with inbound `22`, `80`, and `443` only.
+- Public ports allowed: `22`, `80`, `443`.
+- Non-public ports: `3000`, `8080`, `5432`.
+- PostgreSQL port `5432` is not publicly exposed.
+- Backend port `8080` is bound to localhost only and is not public.
+- Frontend port `3000` is bound to localhost only and is not public.
+- SSH root login is disabled.
+- SSH password login is disabled.
+- Server access uses the `deploy` user.
+- Docker is installed and enabled.
+- Caddy is installed and enabled.
+- `unattended-upgrades` is enabled.
+- Docker daemon log rotation is configured with `json-file`, `max-size` `10m`, and `max-file` `5`.
 
 ## Domain Plan
 
@@ -74,6 +93,12 @@ EVReady Pakistan is live in production.
 
 - Daily automated backups are not enabled yet.
 - Logs are app-rolled and are not backups.
+
+## Remaining Ops Items
+
+- Automate daily DB backups later.
+- Optionally move backups off-server later.
+- Keep Cloudflare DNS records reviewed if proxy mode is changed later.
 
 ## Redeploy Reminder
 

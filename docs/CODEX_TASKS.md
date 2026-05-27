@@ -42,6 +42,7 @@
 - Update Deployment Plan with Purchased Domain and DNS Status
 - Add Minimal Backend Docker Production Deployment Files
 - Document Live Production Deployment State
+- Document Completed VPS Hardening Steps
 
 ## Charger Seed Readiness Note
 

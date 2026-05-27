@@ -7,13 +7,17 @@ This document is a planning checklist only. It does not deploy anything, add inf
 - Backend repo pushed.
 - Frontend repo pushed.
 - Branch strategy documented.
-- VPS not purchased yet.
+- VPS selected for deployment: one Hetzner VPS.
+- VPS public IPv4: `178.105.183.132`.
+- VPS OS: Ubuntu 26.04 LTS.
+- Docker and Docker Compose plugin are installed on the VPS.
 - Domain purchased: `evready.pk`.
 - Registrar: PKNIC.
 - DNS provider: Cloudflare Free.
-- Cloudflare nameservers have been added at PKNIC.
-- Cloudflare activation/propagation is pending.
-- DNS A/CNAME records are not configured yet because the VPS IP is not available.
+- DNS records resolve through Cloudflare:
+  - `evready.pk` -> `178.105.183.132`
+  - `api.evready.pk` -> `178.105.183.132`
+  - `www.evready.pk` -> `evready.pk`
 
 ## Planned Low-Cost Architecture
 
@@ -22,7 +26,7 @@ This document is a planning checklist only. It does not deploy anything, add inf
 - Serve the frontend Vite static build.
 - Keep PostgreSQL private to the server or Docker network.
 - Use a reverse proxy for HTTPS.
-- Manage DNS through Cloudflare Free after activation/propagation completes.
+- Manage DNS through Cloudflare Free.
 
 ## Domain Plan
 
@@ -44,6 +48,18 @@ This document is a planning checklist only. It does not deploy anything, add inf
 - `DB_PASS`
 - `CORS_ALLOWED_ORIGINS`
 - `LOG_PATH` or `LOG_FILE`
+
+## Backend Docker Deployment Notes
+
+- `docker-compose.prod.yml` is for backend and PostgreSQL only.
+- Supply secrets and production values through the shell environment or an untracked env file passed to Docker Compose, for example with `--env-file`.
+- Use `.env.prod.example` only as a placeholder template.
+- Real `.env` files and production secrets must not be committed.
+- PostgreSQL must stay private to the Docker network and must not publish a public port.
+- The backend binds to localhost on the VPS for now, with `127.0.0.1:8080:8080` by default.
+- The backend is expected to be reached through a reverse proxy later at `api.evready.pk`.
+- Reverse proxy/HTTPS setup is separate.
+- Frontend deployment is separate.
 
 ## `.env` Behavior
 
@@ -88,9 +104,6 @@ This document is a planning checklist only. It does not deploy anything, add inf
 
 ## Manual External Steps To Do Later
 
-- Choose VPS provider.
-- Buy VPS.
-- Configure DNS A/CNAME records after VPS IP is available.
 - Configure reverse proxy and HTTPS.
 - Deploy backend.
 - Deploy frontend.

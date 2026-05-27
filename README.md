@@ -88,6 +88,16 @@ Spring Boot does not automatically read `.env` files. A `.env` file only works i
 - Confirm PostgreSQL is not publicly exposed.
 - Confirm HTTPS and reverse proxy handling are configured outside the app.
 
+## Production Docker Notes
+
+- Use `docker-compose.prod.yml` for backend and PostgreSQL deployment on the VPS.
+- Copy `.env.prod.example` to an untracked real env file on the server and replace placeholders there.
+- Real `.env` files and production secrets must not be committed.
+- PostgreSQL is only attached to the Docker network and must not publish a public port.
+- The backend binds to `127.0.0.1:8080` by default; a reverse proxy should expose it later through `api.evready.pk`.
+- Reverse proxy/HTTPS setup is separate from this backend Compose file.
+- Frontend deployment is separate.
+
 ## Branch Strategy
 
 - `main` is production-ready.

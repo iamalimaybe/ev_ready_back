@@ -11,6 +11,7 @@ HELP.md
 .env
 !.env.example
 .env.*
+!.env.prod.example
 src/main/resources/application-local.yml
 src/main/resources/application-*.local.yml
 src/main/resources/application-secret*.yml

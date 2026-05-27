@@ -36,6 +36,11 @@
 - Configure Production File Log Rolling and Retention
 - Correct Production Logback Rolling Policy Property Name
 - Document Production Deployment Profile, Environment, and Logging Notes
+- Add Production Deployment Planning Checklist
+- Document Repository Branch Strategy
+- Update Production Deployment Planning Checklist
+- Update Deployment Plan with Purchased Domain and DNS Status
+- Add Minimal Backend Docker Production Deployment Files
 
 ## Charger Seed Readiness Note
 

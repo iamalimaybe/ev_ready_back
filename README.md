@@ -88,4 +88,30 @@ Spring Boot does not automatically read `.env` files. A `.env` file only works i
 - Confirm PostgreSQL is not publicly exposed.
 - Confirm HTTPS and reverse proxy handling are configured outside the app.
 
+## Production Docker Notes
+
+- Use `docker-compose.prod.yml` for backend and PostgreSQL deployment on the VPS.
+- Copy `.env.prod.example` to an untracked real env file on the server and replace placeholders there.
+- Real `.env` files and production secrets must not be committed.
+- PostgreSQL is only attached to the Docker network and must not publish a public port.
+- The backend binds to `127.0.0.1:8080` by default; a reverse proxy should expose it later through `api.evready.pk`.
+- Reverse proxy/HTTPS setup is separate from this backend Compose file.
+- Frontend deployment is separate.
+
+## Branch Strategy
+
+- `main` is production-ready.
+- `develop` is the integration/testing branch.
+- All future work should use short-lived `feature/*` branches created from `develop`.
+- Pull request flow:
+  - `feature/*` -> `develop`
+  - `develop` -> `main` for production deployment
+- Avoid committing directly to `main` after initial setup.
+- Keep deployment-related work in focused feature branches, for example:
+  - `feature/deployment-plan`
+  - `feature/docker-deployment`
+  - `feature/frontend-prod-config`
+
+See [docs/DEPLOYMENT_PLAN.md](docs/DEPLOYMENT_PLAN.md) for the production planning checklist before buying a VPS or domain.
+
 See [docs/LOCAL_SETUP.md](docs/LOCAL_SETUP.md) and [docs/LIQUIBASE_GUIDE.md](docs/LIQUIBASE_GUIDE.md) for setup and migration rules.

@@ -1,32 +1,31 @@
 # Production Deployment Plan
 
-This document is a planning checklist only. It does not deploy anything, add infrastructure automation, or assume that any external services have been purchased.
+EVReady Pakistan is live in production.
 
-## Current Status
+## Current Production State
 
-- Backend repo pushed.
-- Frontend repo pushed.
-- Branch strategy documented.
-- VPS selected for deployment: one Hetzner VPS.
-- VPS public IPv4: `178.105.183.132`.
-- VPS OS: Ubuntu 26.04 LTS.
-- Docker and Docker Compose plugin are installed on the VPS.
-- Domain purchased: `evready.pk`.
-- Registrar: PKNIC.
-- DNS provider: Cloudflare Free.
-- DNS records resolve through Cloudflare:
+- Domain: `evready.pk`
+- Frontend URL: `https://evready.pk`
+- API URL: `https://api.evready.pk`
+- VPS provider: Hetzner
+- VPS public IPv4: `178.105.183.132`
+- VPS OS: Ubuntu 26.04 LTS
+- Frontend repo deployed from `main`.
+- Backend repo deployed from `main`.
+- Backend runs through Docker Compose.
+- PostgreSQL runs in Docker and is not publicly exposed.
+- Backend is bound to `127.0.0.1:8080`.
+- Frontend is bound to `127.0.0.1:3000`.
+- Caddy handles public HTTPS and reverse proxy routing.
+- Cloudflare manages DNS.
+- Public DNS:
   - `evready.pk` -> `178.105.183.132`
   - `api.evready.pk` -> `178.105.183.132`
   - `www.evready.pk` -> `evready.pk`
-
-## Planned Low-Cost Architecture
-
-- Start with one VPS initially.
-- Run the backend Spring Boot app.
-- Serve the frontend Vite static build.
-- Keep PostgreSQL private to the server or Docker network.
-- Use a reverse proxy for HTTPS.
-- Manage DNS through Cloudflare Free.
+- Public ports allowed: `22`, `80`, `443`.
+- Public ports blocked/not exposed: `3000`, `8080`, `5432`.
+- SSH root login is disabled.
+- Server access uses the `deploy` user.
 
 ## Domain Plan
 
@@ -60,6 +59,30 @@ This document is a planning checklist only. It does not deploy anything, add inf
 - The backend is expected to be reached through a reverse proxy later at `api.evready.pk`.
 - Reverse proxy/HTTPS setup is separate.
 - Frontend deployment is separate.
+
+## Production Operations
+
+- Backend production env file is outside the repo at `/opt/evready/env/backend.prod.env`.
+- Real env values and secrets are not committed.
+- PostgreSQL backup script exists at `/opt/evready/scripts/backup-postgres.sh`.
+- Manual backups are stored under `/opt/evready/backups/postgres`.
+- Manual backup command:
+
+```bash
+/opt/evready/scripts/backup-postgres.sh
+```
+
+- Daily automated backups are not enabled yet.
+- Logs are app-rolled and are not backups.
+
+## Redeploy Reminder
+
+- Production VPS clones should stay on `main`.
+- Run a manual DB backup before risky backend migrations or data changes.
+- Avoid dangerous Docker volume commands in production, including:
+  - `docker compose down -v`
+  - `docker volume rm`
+  - `docker system prune --volumes`
 
 ## `.env` Behavior
 
@@ -104,7 +127,4 @@ This document is a planning checklist only. It does not deploy anything, add inf
 
 ## Manual External Steps To Do Later
 
-- Configure reverse proxy and HTTPS.
-- Deploy backend.
-- Deploy frontend.
-- Smoke test.
+- Enable daily automated PostgreSQL backups.

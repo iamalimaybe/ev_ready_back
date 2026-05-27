@@ -4,30 +4,36 @@ This document is a planning checklist only. It does not deploy anything, add inf
 
 ## Current Status
 
-- Backend repo pushed to private GitHub repository.
-- Frontend repo pushed to private GitHub repository.
+- Backend repo pushed.
+- Frontend repo pushed.
+- Branch strategy documented.
 - VPS not purchased yet.
-- Domain not purchased yet.
-- DNS not configured yet.
-- Current domain preference is `.ai`; final domain is still TBD.
+- Domain purchased: `evready.pk`.
+- Registrar: PKNIC.
+- DNS provider: Cloudflare Free.
+- Cloudflare nameservers have been added at PKNIC.
+- Cloudflare activation/propagation is pending.
+- DNS A/CNAME records are not configured yet because the VPS IP is not available.
 
 ## Planned Low-Cost Architecture
 
-- Start with one VPS.
-- Run the backend Spring Boot app on the server.
-- Serve the frontend as a Vite static build.
+- Start with one VPS initially.
+- Run the backend Spring Boot app.
+- Serve the frontend Vite static build.
 - Keep PostgreSQL private to the server or Docker network.
-- Put a reverse proxy in front of the frontend and backend for HTTPS.
-- Consider Cloudflare DNS later if it is compatible with the selected domain and registrar.
+- Use a reverse proxy for HTTPS.
+- Manage DNS through Cloudflare Free after activation/propagation completes.
 
 ## Domain Plan
 
-- Frontend domain: TBD, likely `.ai`.
-- API domain/subdomain: TBD.
+- Frontend domain: `evready.pk`.
+- API subdomain: `api.evready.pk`.
 - Recommended shape:
-  - Main domain serves the frontend.
-  - `api.<domain>` serves the backend API.
-- Production CORS must be updated after the final domain is selected.
+  - Main domain for frontend.
+  - `api.evready.pk` for backend.
+- Production `CORS_ALLOWED_ORIGINS` should later include:
+  - `https://evready.pk`
+  - `https://www.evready.pk` only if `www` will be used.
 
 ## Production Environment Variables Checklist
 
@@ -39,15 +45,29 @@ This document is a planning checklist only. It does not deploy anything, add inf
 - `CORS_ALLOWED_ORIGINS`
 - `LOG_PATH` or `LOG_FILE`
 
+## `.env` Behavior
+
+- Spring Boot does not automatically read `.env`.
+- `.env` only works if the runtime loads it, such as:
+  - Docker Compose `env_file`
+  - Docker Compose `environment`
+  - systemd `EnvironmentFile`
+  - shell export
+  - IDE run configuration
+  - Gradle `bootRun` environment
+
 ## Logging Checklist
 
 - Production file logs are enabled in the `prod` profile.
+- Default log file should be `logs/evready-backend.log`.
 - `LOG_PATH` sets the log directory when `LOG_FILE` is not set.
 - `LOG_FILE` sets the full file path.
-- Logs roll at `10MB`.
+- Logs roll/archive at `10MB`.
 - Archives are retained for 7 daily periods.
-- Total archive size cap is configured when supported by the active logging setup.
+- Total archive size cap should be documented if configured.
 - Log directory must exist and be writable by the app process.
+- Console logging remains available for Docker/container logs.
+- Rolling logs are not backups.
 
 ## Security Checklist
 
@@ -70,8 +90,7 @@ This document is a planning checklist only. It does not deploy anything, add inf
 
 - Choose VPS provider.
 - Buy VPS.
-- Buy final domain, likely `.ai`.
-- Configure DNS.
+- Configure DNS A/CNAME records after VPS IP is available.
 - Configure reverse proxy and HTTPS.
 - Deploy backend.
 - Deploy frontend.

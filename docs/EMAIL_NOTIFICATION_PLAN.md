@@ -101,6 +101,8 @@ Use environment variables like these in production. Values shown here are names 
 
 Production values should live outside the repo, for example in the real production env file or deployment secret store.
 
+For production Docker Compose, values in `/opt/evready/env/backend.prod.env` must also be passed into the backend container through `docker-compose.prod.yml`. The compose `--env-file` option alone is not enough for Spring Boot runtime visibility unless the variable is mapped under the backend service `environment:` block or loaded through an intentional `env_file:` setup.
+
 Current production SMTP target:
 
 - `SMTP_HOST=smtp.resend.com`
@@ -111,6 +113,12 @@ Current production SMTP target:
 - `LEAD_NOTIFICATION_TO=leads@evready.pk`
 - `CONTACT_NOTIFICATION_TO=contact@evready.pk`
 - `EMAIL_NOTIFICATIONS_ENABLED=true`
+
+Safe runtime verification without printing the SMTP password:
+
+```bash
+docker compose --env-file /opt/evready/env/backend.prod.env -f docker-compose.prod.yml exec backend sh -lc 'echo EMAIL_NOTIFICATIONS_ENABLED=$EMAIL_NOTIFICATIONS_ENABLED; test -n "$SMTP_PASSWORD" && echo SMTP_PASSWORD=SET || echo SMTP_PASSWORD=MISSING'
+```
 
 ## Risks And Boundaries
 

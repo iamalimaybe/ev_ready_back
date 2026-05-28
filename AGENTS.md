@@ -13,6 +13,17 @@
 - Use SQL formatted Liquibase files for actual migrations, not YAML/XML migration files.
 - Mention changed files after every task.
 
+## Production Environment Variable Rules
+
+- Adding a new backend env var is not enough by only documenting it or adding it to `/opt/evready/env/backend.prod.env`.
+- For Docker Compose production, any variable the app must read at runtime must also be passed into the backend container through `docker-compose.prod.yml` using explicit `environment:` mapping or an intentional `env_file:` setup.
+- Any new production env var should be reflected in:
+  - README or deployment docs
+  - `.env.prod.example` if present and appropriate
+  - `docker-compose.prod.yml` if the app must read it at runtime
+- Never commit real secrets.
+- Verify runtime visibility with `docker compose --env-file /opt/evready/env/backend.prod.env -f docker-compose.prod.yml exec backend sh -lc 'echo VAR_NAME=$VAR_NAME'`, but do not print secret values.
+
 ## File Inspection Rules
 
 Before editing, inspect only the smallest set of files needed for the current task.

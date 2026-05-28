@@ -1,6 +1,6 @@
 # Backend Admin MVP Plan
 
-This document plans the backend Admin MVP for EVReady Pakistan. The minimal admin authentication foundation now exists, but admin data APIs, schema changes, and frontend UI are still deferred.
+This document plans the backend Admin MVP for EVReady Pakistan. The minimal admin authentication foundation and protected read-only lead/contact retrieval APIs now exist, but admin write workflows, schema changes, and frontend UI are still deferred.
 
 ## Goal
 
@@ -37,10 +37,13 @@ Lead/contact retrieval must not be public.
 
 ## Suggested First Admin Scope
 
-First scope:
+Implemented first read-only scope:
 
 - View Get Help leads.
 - View Contact Us submissions.
+
+Still deferred from first scope:
+
 - Filter/search by status, date, name, phone/email, city, interest type, inquiry type, and source page where appropriate.
 - Update lead/contact status.
 - Add internal notes only if schema planning supports it later.
@@ -123,12 +126,16 @@ Implemented auth foundation endpoints:
 - `/api/v1/admin/auth`
   - Login/logout/current admin session.
 
-Future protected admin API groups, not implemented yet:
+Implemented protected read-only admin API groups:
 
 - `/api/v1/admin/leads`
-  - List, filter, view detail, update status, later add internal notes.
+  - List and view detail only.
 - `/api/v1/admin/contact-submissions`
-  - List, filter, view detail, update status, later add internal notes.
+  - List and view detail only.
+
+Future protected admin API groups and actions, not implemented yet:
+
+- Lead/contact status updates and internal notes.
 - `/api/v1/admin/vehicles`
   - Later: list/edit basic catalog fields, active state, display order.
 - `/api/v1/admin/chargers`

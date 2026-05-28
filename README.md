@@ -75,7 +75,23 @@ Provide production values through environment variables or the deployment platfo
 
 Do not commit `.env` files or real production credentials. Deploy the backend as a built JAR or container image; do not expose the full repository as a public web directory.
 
-In the `prod` profile, the backend writes file logs to `logs/evready-backend.log` by default. `LOG_PATH` changes the log directory when `LOG_FILE` is not set. `LOG_FILE` changes the full file path. Log archives are compressed, roll when they reach 10 MB, are retained for 7 daily periods, and have a configured total archive size cap of 500 MB. Console logging remains available for Docker/container logs. Server-level backups, monitoring, and log shipping are separate operational concerns.
+In the `prod` profile, the backend writes file logs to `logs/evready-backend.log` by default. `LOG_PATH` changes the log directory when `LOG_FILE` is not set. `LOG_FILE` changes the full file path. In production Docker Compose, backend file logs are bind-mounted to the VPS at `/opt/evready/logs/backend` and should be writable by the container user. Log archives are compressed, roll when they reach 10 MB, are retained for 7 daily periods, and have a configured total archive size cap of 500 MB. Console logging remains available for Docker/container logs. Console logs and file logs are intentionally both present: console logs help Docker/container debugging, and rolling file logs provide application history. Server-level backups, monitoring, and log shipping are separate operational concerns.
+
+Production Docker console logs:
+
+```bash
+docker compose --env-file /opt/evready/env/backend.prod.env -f docker-compose.prod.yml logs --tail=200 backend
+```
+
+Production backend file log examples:
+
+```bash
+tail -n 200 /opt/evready/logs/backend/evready-backend.log
+ls -lah /opt/evready/logs/backend
+du -sh /opt/evready/logs/backend
+```
+
+Older deployments may still have the Docker named volume `backend_backend_logs` with historical logs. Leave that volume in place initially as a fallback.
 
 Spring Boot does not automatically read `.env` files. A `.env` file only works if the runtime loads it, such as Docker Compose `env_file`, Docker Compose `environment`, systemd `EnvironmentFile`, shell export, IDE run configuration, or Gradle `bootRun` environment.
 
@@ -95,6 +111,7 @@ Spring Boot does not automatically read `.env` files. A `.env` file only works i
 - Real `.env` files and production secrets must not be committed.
 - PostgreSQL is only attached to the Docker network and must not publish a public port.
 - The backend binds to `127.0.0.1:8080` by default; a reverse proxy should expose it later through `api.evready.pk`.
+- Production backend file logs are available on the VPS at `/opt/evready/logs/backend`.
 - Reverse proxy/HTTPS setup is separate from this backend Compose file.
 - Frontend deployment is separate.
 

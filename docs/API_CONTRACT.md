@@ -6,7 +6,9 @@ Public read APIs return active records only.
 
 Vehicle source/provenance fields `sourceUrl`, `sourceLabel`, and `sourceCheckedAt` remain internal data-quality fields and are not part of public response DTOs. Vehicle public response DTOs include `verificationStatus` for frontend source-confidence badges.
 
-Charger source/provenance fields (`sourceUrl`, `sourceLabel`, `sourceCheckedAt`, `verificationStatus`) are internal data-quality fields and are not part of public response DTOs yet.
+Charger source/provenance fields `sourceUrl`, `sourceLabel`, and `sourceCheckedAt` remain internal data-quality fields and are not part of public response DTOs. Charger public response DTOs include `verificationStatus` for frontend source-confidence badges.
+
+For vehicle and charger public DTOs, `OFFICIAL` means the data is source-backed from an official, operator, or distributor-type source. It does not mean EVReady personally audited, field-verified, or guarantees the data. Public API responses must not imply live charger availability, verified prices, or guaranteed charger status.
 
 ## Response Contract
 
@@ -38,7 +40,7 @@ Returns active charger types ordered by `displayOrder` ascending, then `name` as
 
 Returns a list of vehicles for the catalog.
 
-Public vehicle list responses include `verificationStatus`. Frontend clients use this value for source-confidence badges. `OFFICIAL` means the vehicle data came from an official OEM, operator, or distributor source; the UI must not describe it as "Verified" or imply EVReady personally audited vehicle specs or prices.
+Public vehicle list responses include `verificationStatus`. Frontend clients use this value for source-confidence badges. `OFFICIAL` means the vehicle data came from an official OEM, operator, or distributor-type source; the UI must not describe it as "Verified" or imply EVReady personally audited vehicle specs or prices.
 
 `sourceUrl` and `sourceLabel` remain internal and are not exposed in public vehicle responses. Missing or `null` `verificationStatus` values should be treated by frontend clients as `UNVERIFIED`.
 
@@ -71,6 +73,10 @@ Public vehicle detail responses include `verificationStatus` with the same front
 
 Returns a list of active chargers for the directory. Chargers whose charger type is inactive are not returned.
 
+Public charger list responses include `verificationStatus`. Frontend clients use this value for source-confidence badges. `OFFICIAL` means the charger data came from an official operator, network, distributor, or similar source; the UI must not imply live charger availability, verified price, guaranteed operational status, or EVReady field verification.
+
+`sourceUrl`, `sourceLabel`, and `sourceCheckedAt` remain internal and are not exposed in public charger responses. Missing or `null` `verificationStatus` values should be treated by frontend clients as `UNVERIFIED`.
+
 Planned filters:
 
 - `city`
@@ -89,6 +95,8 @@ Planned sort values:
 ### `GET /api/v1/chargers/{id}`
 
 Returns a single active charger by ID, including charger type display info. Returns 404 when the charger does not exist or is not active.
+
+Public charger detail responses include `verificationStatus` with the same frontend handling rules as charger list responses.
 
 ### `GET /api/v1/chargers/cities`
 

@@ -32,8 +32,7 @@ services:
     ports:
       - "127.0.0.1:${SERVER_PORT:-8080}:${SERVER_PORT:-8080}"
     volumes:
-      - backend_logs:${LOG_PATH:-/app/logs}
+      - /opt/evready/logs/backend:${LOG_PATH:-/app/logs}
 
 volumes:
   postgres_data:
-  backend_logs:

@@ -149,4 +149,6 @@ Spring Boot does not automatically read `.env` files. A `.env` file only works i
 
 See [docs/DEPLOYMENT_PLAN.md](docs/DEPLOYMENT_PLAN.md) for the production planning checklist before buying a VPS or domain.
 
+See [docs/ADMIN_MVP_PLAN.md](docs/ADMIN_MVP_PLAN.md) for the deferred backend admin planning notes. Admin APIs/auth are not implemented yet.
+
 See [docs/LOCAL_SETUP.md](docs/LOCAL_SETUP.md) and [docs/LIQUIBASE_GUIDE.md](docs/LIQUIBASE_GUIDE.md) for setup and migration rules.

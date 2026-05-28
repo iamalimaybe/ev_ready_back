@@ -79,6 +79,20 @@
   - Changed files: `src/main/java/com/ev/ready/admin/auth/controller/AdminAuthController.java`, `docs/CODEX_TASKS.md`
 - Move Credentialed API CORS Into Spring Security
   - Changed files: `src/main/java/com/ev/ready/config/SecurityConfig.java`, `src/main/java/com/ev/ready/config/CorsConfig.java`, `docs/CODEX_TASKS.md`
+- Add Protected Admin Lead Status Update API
+  - Changed files: `src/main/java/com/ev/ready/admin/lead/controller/AdminLeadSubmissionController.java`, `src/main/java/com/ev/ready/lead/dto/UpdateLeadStatusRequest.java`, `src/main/java/com/ev/ready/lead/service/LeadSubmissionService.java`, `docs/API_CONTRACT.md`, `docs/ADMIN_MVP_PLAN.md`, `docs/CODEX_TASKS.md`
+- Clean Up Admin Lead Status Audit Handling
+  - Changed files: `src/main/java/com/ev/ready/admin/lead/controller/AdminLeadSubmissionController.java`, `src/main/java/com/ev/ready/lead/service/LeadSubmissionService.java`, `docs/CODEX_TASKS.md`
+- Add Protected Admin Lead Status Options API
+  - Changed files: `src/main/java/com/ev/ready/admin/lead/controller/AdminLeadSubmissionController.java`, `src/main/java/com/ev/ready/lead/dto/LeadStatusOptionResponse.java`, `src/main/java/com/ev/ready/lead/service/LeadSubmissionService.java`, `docs/API_CONTRACT.md`, `docs/CODEX_TASKS.md`
+- Document Admin Lead Status PATCH CORS Dependency
+  - Noted that browser-based admin calls require Spring Security CORS allowed methods to include newly introduced HTTP methods.
+  - Documented that `PATCH` is required for `PATCH /api/v1/admin/leads/{id}/status`.
+  - Changed files: `AGENTS.md`, `docs/API_CONTRACT.md`, `docs/CODEX_TASKS.md`
+- Add Protected Admin Contact Submission Status Support
+  - Added contact submission status storage, default `NEW` status on public create, protected admin status options, and protected admin status update.
+  - Kept contact status admin-only and did not add notes, CSV export, search, or frontend code.
+  - Changed files: `src/main/resources/db/changelog/V014__add_contact_submission_status.sql`, `src/main/java/com/ev/ready/contact/enums/ContactSubmissionStatus.java`, `src/main/java/com/ev/ready/contact/domain/ContactSubmission.java`, `src/main/java/com/ev/ready/contact/dto/AdminContactSubmissionResponse.java`, `src/main/java/com/ev/ready/contact/dto/ContactSubmissionStatusOptionResponse.java`, `src/main/java/com/ev/ready/contact/dto/UpdateContactSubmissionStatusRequest.java`, `src/main/java/com/ev/ready/contact/service/ContactSubmissionService.java`, `src/main/java/com/ev/ready/admin/contact/controller/AdminContactSubmissionController.java`, `docs/API_CONTRACT.md`, `docs/DATA_MODEL.md`, `docs/ADMIN_MVP_PLAN.md`, `docs/CODEX_TASKS.md`
 
 ## Charger Seed Readiness Note
 

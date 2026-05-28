@@ -1,7 +1,10 @@
 package com.ev.ready.contact.domain;
 
+import com.ev.ready.contact.enums.ContactSubmissionStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -39,6 +42,10 @@ public class ContactSubmission {
 
     @Column(name = "consent_accepted", nullable = false)
     private Boolean consentAccepted = false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "contact_status", nullable = false, length = 40)
+    private ContactSubmissionStatus contactStatus = ContactSubmissionStatus.NEW;
 
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
@@ -122,6 +129,14 @@ public class ContactSubmission {
 
     public void setConsentAccepted(Boolean consentAccepted) {
         this.consentAccepted = consentAccepted;
+    }
+
+    public ContactSubmissionStatus getContactStatus() {
+        return contactStatus;
+    }
+
+    public void setContactStatus(ContactSubmissionStatus contactStatus) {
+        this.contactStatus = contactStatus;
     }
 
     public OffsetDateTime getCreatedAt() {

@@ -2,11 +2,18 @@ package com.ev.ready.admin.lead.controller;
 
 import com.ev.ready.common.PageResponse;
 import com.ev.ready.lead.dto.AdminLeadSubmissionResponse;
+import com.ev.ready.lead.dto.LeadStatusOptionResponse;
+import com.ev.ready.lead.dto.UpdateLeadStatusRequest;
 import com.ev.ready.lead.service.LeadSubmissionService;
+import jakarta.validation.Valid;
+import java.util.List;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,8 +34,22 @@ public class AdminLeadSubmissionController {
         return leadSubmissionService.getAdminLeadSubmissions(page, size);
     }
 
+    @GetMapping("/statuses")
+    public List<LeadStatusOptionResponse> getLeadStatusOptions() {
+        return leadSubmissionService.getAdminLeadStatusOptions();
+    }
+
     @GetMapping("/{id}")
     public AdminLeadSubmissionResponse getLeadSubmission(@PathVariable Long id) {
         return leadSubmissionService.getAdminLeadSubmission(id);
+    }
+
+    @PatchMapping("/{id}/status")
+    public AdminLeadSubmissionResponse updateLeadStatus(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateLeadStatusRequest request,
+            Authentication authentication
+    ) {
+        return leadSubmissionService.updateAdminLeadStatus(id, request, authentication.getName());
     }
 }

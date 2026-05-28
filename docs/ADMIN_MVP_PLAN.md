@@ -1,6 +1,6 @@
 # Backend Admin MVP Plan
 
-This document plans the backend Admin MVP for EVReady Pakistan. The minimal admin authentication foundation and protected read-only lead/contact retrieval APIs now exist, but admin write workflows, schema changes, and frontend UI are still deferred.
+This document plans the backend Admin MVP for EVReady Pakistan. The minimal admin authentication foundation, protected lead/contact retrieval APIs, and simple lead/contact status updates now exist, but internal notes, broader admin workflows, catalog management, and frontend UI work remain deferred.
 
 ## Goal
 
@@ -37,15 +37,16 @@ Lead/contact retrieval must not be public.
 
 ## Suggested First Admin Scope
 
-Implemented first read-only scope:
+Implemented first admin scope:
 
 - View Get Help leads.
 - View Contact Us submissions.
+- Update Get Help lead status.
+- Update Contact Us submission status.
 
-Still deferred from first scope:
+Still deferred from current scope:
 
 - Filter/search by status, date, name, phone/email, city, interest type, inquiry type, and source page where appropriate.
-- Update lead/contact status.
 - Add internal notes only if schema planning supports it later.
 
 Later scope:
@@ -126,16 +127,16 @@ Implemented auth foundation endpoints:
 - `/api/v1/admin/auth`
   - Login/logout/current admin session.
 
-Implemented protected read-only admin API groups:
+Implemented protected admin API groups:
 
 - `/api/v1/admin/leads`
-  - List and view detail only.
+  - List, view detail, status options, and status update.
 - `/api/v1/admin/contact-submissions`
-  - List and view detail only.
+  - List, view detail, status options, and status update.
 
 Future protected admin API groups and actions, not implemented yet:
 
-- Lead/contact status updates and internal notes.
+- Internal notes.
 - `/api/v1/admin/vehicles`
   - Later: list/edit basic catalog fields, active state, display order.
 - `/api/v1/admin/chargers`
@@ -184,8 +185,9 @@ These are future schema planning candidates only. Do not create migrations until
 1. Plan admin scope and auth/access-control rules.
 2. Implement auth foundation.
 3. Implement read-only admin views for leads and contact submissions.
-4. Implement status updates and internal notes after schema decisions.
-5. Add vehicle catalog management later.
-6. Add charger directory management later.
+4. Implement status updates.
+5. Add internal notes after schema decisions.
+6. Add vehicle catalog management later.
+7. Add charger directory management later.
 
 Each step should be small, reviewed, and deployed separately.

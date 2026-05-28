@@ -77,6 +77,8 @@
   - Changed files: `src/main/java/com/ev/ready/config/SecurityConfig.java`, `src/main/java/com/ev/ready/admin/auth/controller/AdminAuthController.java`, `docs/CODEX_TASKS.md`
 - Store Admin SecurityContext Explicitly In HTTP Session
   - Changed files: `src/main/java/com/ev/ready/admin/auth/controller/AdminAuthController.java`, `docs/CODEX_TASKS.md`
+- Move Credentialed API CORS Into Spring Security
+  - Changed files: `src/main/java/com/ev/ready/config/SecurityConfig.java`, `src/main/java/com/ev/ready/config/CorsConfig.java`, `docs/CODEX_TASKS.md`
 
 ## Charger Seed Readiness Note
 

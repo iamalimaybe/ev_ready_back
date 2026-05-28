@@ -83,7 +83,15 @@ Provide production values through environment variables or the deployment platfo
 
 Do not commit `.env` files or real production credentials. Deploy the backend as a built JAR or container image; do not expose the full repository as a public web directory.
 
+The production backend env file lives at `/opt/evready/env/backend.prod.env`. Docker Compose `--env-file` makes values available for compose interpolation, but the backend container only receives variables that are explicitly mapped in `docker-compose.prod.yml` or intentionally loaded with `env_file`. When adding runtime env vars, update both the real server env file and the compose backend `environment:` mapping.
+
 Cloudflare Email Routing is inbound/forwarding only. Backend outbound notification emails use SMTP configuration. Lead/contact submissions are saved to PostgreSQL as the source of truth; notification email failures are logged safely and must not fail successful form submissions.
+
+Safe runtime verification without printing the SMTP secret:
+
+```bash
+docker compose --env-file /opt/evready/env/backend.prod.env -f docker-compose.prod.yml exec backend sh -lc 'echo EMAIL_NOTIFICATIONS_ENABLED=$EMAIL_NOTIFICATIONS_ENABLED; test -n "$SMTP_PASSWORD" && echo SMTP_PASSWORD=SET || echo SMTP_PASSWORD=MISSING'
+```
 
 In the `prod` profile, the backend writes file logs to `logs/evready-backend.log` by default. `LOG_PATH` changes the log directory when `LOG_FILE` is not set. `LOG_FILE` changes the full file path. In production Docker Compose, backend file logs are bind-mounted to the VPS at `/opt/evready/logs/backend` and should be writable by the container user. Log archives are compressed, roll when they reach 10 MB, are retained for 7 daily periods, and have a configured total archive size cap of 500 MB. Console logging remains available for Docker/container logs. Console logs and file logs are intentionally both present: console logs help Docker/container debugging, and rolling file logs provide application history. Server-level backups, monitoring, and log shipping are separate operational concerns.
 

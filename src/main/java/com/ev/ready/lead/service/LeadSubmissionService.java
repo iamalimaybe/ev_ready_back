@@ -6,6 +6,7 @@ import com.ev.ready.lead.dto.CreateLeadSubmissionRequest;
 import com.ev.ready.lead.dto.LeadSubmissionResponse;
 import com.ev.ready.lead.enums.LeadStatus;
 import com.ev.ready.lead.repository.LeadSubmissionRepository;
+import com.ev.ready.notification.SubmissionNotificationService;
 import java.time.OffsetDateTime;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,9 +15,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class LeadSubmissionService {
 
     private final LeadSubmissionRepository leadSubmissionRepository;
+    private final SubmissionNotificationService submissionNotificationService;
 
-    public LeadSubmissionService(LeadSubmissionRepository leadSubmissionRepository) {
+    public LeadSubmissionService(
+            LeadSubmissionRepository leadSubmissionRepository,
+            SubmissionNotificationService submissionNotificationService
+    ) {
         this.leadSubmissionRepository = leadSubmissionRepository;
+        this.submissionNotificationService = submissionNotificationService;
     }
 
     @Transactional
@@ -34,6 +40,7 @@ public class LeadSubmissionService {
         leadSubmission.setCreatedAt(OffsetDateTime.now());
 
         LeadSubmission savedLeadSubmission = leadSubmissionRepository.save(leadSubmission);
+        submissionNotificationService.notifyLeadSubmission(savedLeadSubmission);
 
         return new LeadSubmissionResponse(
                 savedLeadSubmission.getId(),

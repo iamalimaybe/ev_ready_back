@@ -51,6 +51,8 @@
   - Changed files: `docs/DEPLOYMENT_PLAN.md`, `docs/CODEX_TASKS.md`
 - Quiet Static Resource 404 Scanner Logs
   - Changed files: `src/main/java/com/ev/ready/exception/GlobalApiExceptionHandler.java`, `docs/CODEX_TASKS.md`
+- Review Vehicle Catalog Seed Data Quality
+  - Changed files: `docs/VEHICLE_DATA_QUALITY_REVIEW.md`, `docs/CODEX_TASKS.md`
 
 ## Charger Seed Readiness Note
 

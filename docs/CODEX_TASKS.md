@@ -55,6 +55,8 @@
   - Changed files: `docs/VEHICLE_DATA_QUALITY_REVIEW.md`, `docs/CODEX_TASKS.md`
 - Review Charger Directory Seed Data Quality
   - Changed files: `docs/CHARGER_DATA_QUALITY_REVIEW.md`, `docs/CODEX_TASKS.md`
+- Document Lead And Contact Handling Plan
+  - Changed files: `docs/LEAD_CONTACT_HANDLING_PLAN.md`, `docs/CODEX_TASKS.md`
 
 ## Charger Seed Readiness Note
 

@@ -85,11 +85,12 @@ Field summary:
 - `message`
 - `sourcePage`
 - `consentAccepted`
+- `contactStatus`
 - audit fields
 
-`inquiryType` is stored as a string for now.
+`inquiryType` is stored as a string for now. `contactStatus` is a Java enum with first-version admin workflow values: `NEW`, `REVIEWED`, `RESPONDED`, `CLOSED`, and `SPAM`. The database should not add CHECK constraints for this field unless explicitly requested later.
 
-Contact submissions are separate from Get Help leads and are not exposed through public or admin retrieval APIs in the first release.
+Contact submissions are separate from Get Help leads and are not exposed publicly. Protected admin APIs can read submissions and update `contactStatus`.
 
 ## Data Conventions
 

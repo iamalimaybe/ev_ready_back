@@ -1,6 +1,6 @@
 # Backend Admin MVP Plan
 
-This document plans a future backend Admin MVP for EVReady Pakistan. It is documentation only. It does not implement admin APIs, authentication, schema changes, frontend UI, or new public API behavior.
+This document plans the backend Admin MVP for EVReady Pakistan. The minimal admin authentication foundation now exists, but admin data APIs, schema changes, and frontend UI are still deferred.
 
 ## Goal
 
@@ -31,7 +31,7 @@ Do not build these first:
 
 Admin retrieval endpoints would expose sensitive data that is not part of the public API contract. Get Help and Contact Us records include names, phone numbers, emails, organizations, free-text messages, and source pages.
 
-No admin read or write endpoint should exist until authentication and access control are designed and implemented. CORS is not authentication, frontend route hiding is not authorization, and private URL paths are not protection.
+No admin read or write endpoint should exist without authentication and access control. CORS is not authentication, frontend route hiding is not authorization, and private URL paths are not protection.
 
 Lead/contact retrieval must not be public.
 
@@ -104,7 +104,7 @@ Cons:
 
 ## Auth Recommendation
 
-For the first version, prefer a protected browser admin using a minimal username/password login with a server-controlled session cookie, unless the frontend architecture strongly favors JWT. Start with one `ADMIN` role and keep the flow small.
+The first version uses a protected browser-oriented username/password login with a server-controlled session cookie. Credentials come from `ADMIN_USERNAME` and `ADMIN_PASSWORD` environment variables only. Start with one `ADMIN` role and keep the flow small.
 
 Do not introduce multiple auth modes in the MVP.
 
@@ -118,10 +118,13 @@ Defer granular permissions until there is a real operating need. Separate roles 
 
 ## Future Protected Admin API Groups
 
-These are planning names only, not implemented endpoints:
+Implemented auth foundation endpoints:
 
 - `/api/v1/admin/auth`
   - Login/logout/current admin session.
+
+Future protected admin API groups, not implemented yet:
+
 - `/api/v1/admin/leads`
   - List, filter, view detail, update status, later add internal notes.
 - `/api/v1/admin/contact-submissions`

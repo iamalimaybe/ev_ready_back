@@ -1,6 +1,7 @@
 package com.ev.ready.contact.dto;
 
 import com.ev.ready.contact.domain.ContactSubmission;
+import com.ev.ready.contact.enums.ContactSubmissionStatus;
 import java.time.OffsetDateTime;
 
 public record AdminContactSubmissionResponse(
@@ -13,6 +14,7 @@ public record AdminContactSubmissionResponse(
         String message,
         String sourcePage,
         Boolean consentAccepted,
+        ContactSubmissionStatus contactStatus,
         OffsetDateTime createdAt,
         OffsetDateTime updatedAt
 ) {
@@ -28,6 +30,7 @@ public record AdminContactSubmissionResponse(
                 contactSubmission.getMessage(),
                 contactSubmission.getSourcePage(),
                 contactSubmission.getConsentAccepted(),
+                contactSubmission.getContactStatus(),
                 contactSubmission.getCreatedAt(),
                 contactSubmission.getUpdatedAt()
         );

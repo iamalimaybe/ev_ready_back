@@ -171,7 +171,7 @@ Returns `201 Created` with:
 - `id`
 - `message`
 
-Public or admin Contact Us retrieval APIs are not part of the first release.
+Public Contact Us retrieval APIs are not part of the first release. Protected admin retrieval and status management are available for authenticated admins only.
 
 ## Protected Admin Auth
 
@@ -269,7 +269,7 @@ Allowed `leadStatus` values:
 
 This endpoint does not imply a customer callback, SLA, internal notes workflow, or contact submission status support.
 
-## Protected Admin Contact Submission Reads
+## Protected Admin Contact Submission APIs
 
 These endpoints require an active admin session. They expose personal submission data to trusted admins only and must not be public.
 
@@ -293,12 +293,42 @@ Contact admin records include:
 - `message`
 - `sourcePage`
 - `consentAccepted`
+- `contactStatus`
 - `createdAt`
 - `updatedAt`
+
+### `GET /api/v1/admin/contact-submissions/statuses`
+
+Returns contact submission status options for admin UI controls as a plain JSON array. Values are derived from the backend `ContactSubmissionStatus` enum.
+
+Each option includes:
+
+- `value`
+- `label`
 
 ### `GET /api/v1/admin/contact-submissions/{id}`
 
 Returns one Contact Us submission for admins. Returns `404` when the record does not exist.
+
+### `PATCH /api/v1/admin/contact-submissions/{id}/status`
+
+Updates only the `contactStatus` for one Contact Us submission. Returns the updated admin contact submission record. Returns `404` when the record does not exist.
+
+This protected admin endpoint is called by browser clients with session credentials, so backend CORS allowed methods must include `PATCH`.
+
+Request fields:
+
+- `contactStatus`
+
+Allowed `contactStatus` values:
+
+- `NEW`
+- `REVIEWED`
+- `RESPONDED`
+- `CLOSED`
+- `SPAM`
+
+This endpoint does not imply a customer callback, SLA, internal notes workflow, or lead status behavior changes.
 
 ## Error Response Format
 

@@ -49,6 +49,8 @@
   - Changed files: `docker-compose.prod.yml`, `README.md`, `docs/API_CONTRACT.md`, `docs/DATA_MODEL.md`, `docs/DEPLOYMENT_PLAN.md`, `docs/CODEX_TASKS.md`
 - Clarify Manual PostgreSQL Backup Approach
   - Changed files: `docs/DEPLOYMENT_PLAN.md`, `docs/CODEX_TASKS.md`
+- Quiet Static Resource 404 Scanner Logs
+  - Changed files: `src/main/java/com/ev/ready/exception/GlobalApiExceptionHandler.java`, `docs/CODEX_TASKS.md`
 
 ## Charger Seed Readiness Note
 

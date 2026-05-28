@@ -79,6 +79,10 @@
   - Changed files: `src/main/java/com/ev/ready/admin/auth/controller/AdminAuthController.java`, `docs/CODEX_TASKS.md`
 - Move Credentialed API CORS Into Spring Security
   - Changed files: `src/main/java/com/ev/ready/config/SecurityConfig.java`, `src/main/java/com/ev/ready/config/CorsConfig.java`, `docs/CODEX_TASKS.md`
+- Add Protected Admin Lead Status Update API
+  - Changed files: `src/main/java/com/ev/ready/admin/lead/controller/AdminLeadSubmissionController.java`, `src/main/java/com/ev/ready/lead/dto/UpdateLeadStatusRequest.java`, `src/main/java/com/ev/ready/lead/service/LeadSubmissionService.java`, `docs/API_CONTRACT.md`, `docs/ADMIN_MVP_PLAN.md`, `docs/CODEX_TASKS.md`
+- Clean Up Admin Lead Status Audit Handling
+  - Changed files: `src/main/java/com/ev/ready/admin/lead/controller/AdminLeadSubmissionController.java`, `src/main/java/com/ev/ready/lead/service/LeadSubmissionService.java`, `docs/CODEX_TASKS.md`
 
 ## Charger Seed Readiness Note
 

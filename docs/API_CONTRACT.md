@@ -241,6 +241,23 @@ Lead admin records include:
 
 Returns one Get Help lead submission for admins. Returns `404` when the record does not exist.
 
+### `PATCH /api/v1/admin/leads/{id}/status`
+
+Updates only the `leadStatus` for one Get Help lead submission. Returns the updated admin lead record. Returns `404` when the record does not exist.
+
+Request fields:
+
+- `leadStatus`
+
+Allowed `leadStatus` values:
+
+- `NEW`
+- `CONTACTED`
+- `CLOSED`
+- `SPAM`
+
+This endpoint does not imply a customer callback, SLA, internal notes workflow, or contact submission status support.
+
 ## Protected Admin Contact Submission Reads
 
 These endpoints require an active admin session. They expose personal submission data to trusted admins only and must not be public.

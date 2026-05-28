@@ -6,6 +6,7 @@ import com.ev.ready.lead.domain.LeadSubmission;
 import com.ev.ready.lead.dto.AdminLeadSubmissionResponse;
 import com.ev.ready.lead.dto.CreateLeadSubmissionRequest;
 import com.ev.ready.lead.dto.LeadSubmissionResponse;
+import com.ev.ready.lead.dto.UpdateLeadStatusRequest;
 import com.ev.ready.lead.enums.LeadStatus;
 import com.ev.ready.lead.repository.LeadSubmissionRepository;
 import com.ev.ready.notification.SubmissionNotificationService;
@@ -69,6 +70,22 @@ public class LeadSubmissionService {
         return leadSubmissionRepository.findById(id)
                 .map(AdminLeadSubmissionResponse::from)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Lead submission not found."));
+    }
+
+    @Transactional
+    public AdminLeadSubmissionResponse updateAdminLeadStatus(
+            Long id,
+            UpdateLeadStatusRequest request,
+            String updatedBy
+    ) {
+        LeadSubmission leadSubmission = leadSubmissionRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Lead submission not found."));
+
+        leadSubmission.setLeadStatus(request.leadStatus());
+        leadSubmission.setUpdatedBy(updatedBy);
+        leadSubmission.setUpdatedAt(OffsetDateTime.now());
+
+        return AdminLeadSubmissionResponse.from(leadSubmission);
     }
 
     private PageRequest pageRequest(Integer page, Integer size) {

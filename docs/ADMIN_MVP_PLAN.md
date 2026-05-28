@@ -37,15 +37,16 @@ Lead/contact retrieval must not be public.
 
 ## Suggested First Admin Scope
 
-Implemented first read-only scope:
+Implemented first admin scope:
 
 - View Get Help leads.
 - View Contact Us submissions.
+- Update Get Help lead status.
 
-Still deferred from first scope:
+Still deferred from current scope:
 
 - Filter/search by status, date, name, phone/email, city, interest type, inquiry type, and source page where appropriate.
-- Update lead/contact status.
+- Update Contact Us submission status.
 - Add internal notes only if schema planning supports it later.
 
 Later scope:
@@ -135,7 +136,7 @@ Implemented protected read-only admin API groups:
 
 Future protected admin API groups and actions, not implemented yet:
 
-- Lead/contact status updates and internal notes.
+- Contact submission status updates and internal notes.
 - `/api/v1/admin/vehicles`
   - Later: list/edit basic catalog fields, active state, display order.
 - `/api/v1/admin/chargers`

@@ -72,6 +72,8 @@ EVReady Pakistan is live in production.
 
 - `docker-compose.prod.yml` is for backend and PostgreSQL only.
 - Supply secrets and production values through `/opt/evready/env/backend.prod.env` with Docker Compose `--env-file`.
+- Docker Compose `--env-file` provides values for compose interpolation; it does not automatically inject every variable into the backend container.
+- Runtime app variables must be explicitly passed under the backend service `environment:` mapping in `docker-compose.prod.yml` or through an intentional `env_file:` setup.
 - The real production env file should not be world-readable. Expected permissions are restrictive, for example `600`.
 - Use `.env.prod.example` only as a placeholder template.
 - Real `.env` files and production secrets must not be committed.
@@ -87,6 +89,13 @@ EVReady Pakistan is live in production.
 
 - Backend production env file is outside the repo at `/opt/evready/env/backend.prod.env`.
 - Real env values and secrets are not committed.
+- After adding production env vars, verify non-secret runtime visibility inside the backend container.
+- Safe email-env verification command:
+
+```bash
+docker compose --env-file /opt/evready/env/backend.prod.env -f docker-compose.prod.yml exec backend sh -lc 'echo EMAIL_NOTIFICATIONS_ENABLED=$EMAIL_NOTIFICATIONS_ENABLED; test -n "$SMTP_PASSWORD" && echo SMTP_PASSWORD=SET || echo SMTP_PASSWORD=MISSING'
+```
+
 - PostgreSQL backup script exists at `/opt/evready/scripts/backup-postgres.sh`.
 - Manual backups are stored under `/opt/evready/backups/postgres`.
 - Manual backup command:

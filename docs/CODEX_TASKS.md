@@ -53,6 +53,8 @@
   - Changed files: `src/main/java/com/ev/ready/exception/GlobalApiExceptionHandler.java`, `docs/CODEX_TASKS.md`
 - Review Vehicle Catalog Seed Data Quality
   - Changed files: `docs/VEHICLE_DATA_QUALITY_REVIEW.md`, `docs/CODEX_TASKS.md`
+- Review Charger Directory Seed Data Quality
+  - Changed files: `docs/CHARGER_DATA_QUALITY_REVIEW.md`, `docs/CODEX_TASKS.md`
 
 ## Charger Seed Readiness Note
 

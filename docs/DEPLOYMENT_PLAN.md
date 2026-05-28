@@ -95,7 +95,9 @@ EVReady Pakistan is live in production.
 /opt/evready/scripts/backup-postgres.sh
 ```
 
-- Daily automated backups are not enabled yet.
+- PostgreSQL backups remain manual for now.
+- Manual backup creation and restore-test practice are documented.
+- Automated backups are intentionally not planned at this stage unless the decision changes later.
 - Logs are app-rolled and are not backups.
 - Old Docker named volume `backend_backend_logs` may still exist after the logging bind mount deployment. Leave it in place initially as historical log fallback.
 
@@ -186,7 +188,6 @@ Cloudflare check:
 
 ## Remaining Ops Items
 
-- Automate daily DB backups later.
 - Optionally move backups off-server later.
 - Keep Cloudflare DNS records reviewed if proxy mode is changed later.
 
@@ -242,8 +243,5 @@ docker compose --env-file /opt/evready/env/backend.prod.env -f docker-compose.pr
 - Backup creation alone is not enough; periodically restore-test backups.
 - Restore-test only into a temporary test database/container.
 - Do not restore over production unless intentionally performing disaster recovery.
+- Automated backups are intentionally not planned at this stage unless the decision changes later.
 - Later, move backups off-server if possible.
-
-## Manual External Steps To Do Later
-
-- Enable daily automated PostgreSQL backups.

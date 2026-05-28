@@ -23,8 +23,7 @@ Backend service for EVReady Pakistan. The first release provides data APIs for t
 ## Deferred Scope
 
 - Ratings/reviews
-- Admin UI
-- Authentication
+- Admin UI and admin data APIs
 - Payments
 - Maps/live charger integration
 
@@ -78,6 +77,8 @@ Production environment variables:
 - `SMTP_FROM`: notification sender address, for example `no-reply@evready.pk`
 - `LEAD_NOTIFICATION_TO`: Get Help notification recipient, for example `leads@evready.pk`
 - `CONTACT_NOTIFICATION_TO`: Contact Us notification recipient, for example `contact@evready.pk`
+- `ADMIN_USERNAME`: first-version admin username from environment only
+- `ADMIN_PASSWORD`: first-version admin password from environment only; never commit it
 
 Provide production values through environment variables or the deployment platform's secret store. Do not commit production secrets.
 
@@ -86,6 +87,8 @@ Do not commit `.env` files or real production credentials. Deploy the backend as
 The production backend env file lives at `/opt/evready/env/backend.prod.env`. Docker Compose `--env-file` makes values available for compose interpolation, but the backend container only receives variables that are explicitly mapped in `docker-compose.prod.yml` or intentionally loaded with `env_file`. When adding runtime env vars, update both the real server env file and the compose backend `environment:` mapping.
 
 Cloudflare Email Routing is inbound/forwarding only. Backend outbound notification emails use SMTP configuration. Lead/contact submissions are saved to PostgreSQL as the source of truth; notification email failures are logged safely and must not fail successful form submissions.
+
+Admin authentication is available only for protected `/api/v1/admin/**` endpoints. Configure `ADMIN_USERNAME` and `ADMIN_PASSWORD` outside the repo before using admin auth. Admin UI and admin data retrieval are not implemented yet.
 
 Safe runtime verification without printing the SMTP secret:
 

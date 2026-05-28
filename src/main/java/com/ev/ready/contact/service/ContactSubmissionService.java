@@ -5,6 +5,7 @@ import com.ev.ready.contact.domain.ContactSubmission;
 import com.ev.ready.contact.dto.ContactSubmissionResponse;
 import com.ev.ready.contact.dto.CreateContactSubmissionRequest;
 import com.ev.ready.contact.repository.ContactSubmissionRepository;
+import com.ev.ready.notification.SubmissionNotificationService;
 import java.time.OffsetDateTime;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,9 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class ContactSubmissionService {
 
     private final ContactSubmissionRepository contactSubmissionRepository;
+    private final SubmissionNotificationService submissionNotificationService;
 
-    public ContactSubmissionService(ContactSubmissionRepository contactSubmissionRepository) {
+    public ContactSubmissionService(
+            ContactSubmissionRepository contactSubmissionRepository,
+            SubmissionNotificationService submissionNotificationService
+    ) {
         this.contactSubmissionRepository = contactSubmissionRepository;
+        this.submissionNotificationService = submissionNotificationService;
     }
 
     @Transactional
@@ -32,6 +38,7 @@ public class ContactSubmissionService {
         contactSubmission.setCreatedAt(OffsetDateTime.now());
 
         ContactSubmission savedContactSubmission = contactSubmissionRepository.save(contactSubmission);
+        submissionNotificationService.notifyContactSubmission(savedContactSubmission);
 
         return new ContactSubmissionResponse(
                 savedContactSubmission.getId(),

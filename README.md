@@ -70,10 +70,20 @@ Production environment variables:
 - `CORS_ALLOWED_ORIGINS`: comma-separated production frontend origins
 - `LOG_PATH`: log directory when `LOG_FILE` is not set. Prod profile default: `logs`
 - `LOG_FILE`: full log file path. Prod profile default: `logs/evready-backend.log`
+- `EMAIL_NOTIFICATIONS_ENABLED`: enables best-effort lead/contact notification emails. Default: `false`
+- `SMTP_HOST`: SMTP host. Current production provider target: `smtp.resend.com`
+- `SMTP_PORT`: SMTP port. Current production provider target: `587`
+- `SMTP_USERNAME`: SMTP username. Current production provider target: `resend`
+- `SMTP_PASSWORD`: SMTP password/API key from environment only; never commit it
+- `SMTP_FROM`: notification sender address, for example `no-reply@evready.pk`
+- `LEAD_NOTIFICATION_TO`: Get Help notification recipient, for example `leads@evready.pk`
+- `CONTACT_NOTIFICATION_TO`: Contact Us notification recipient, for example `contact@evready.pk`
 
 Provide production values through environment variables or the deployment platform's secret store. Do not commit production secrets.
 
 Do not commit `.env` files or real production credentials. Deploy the backend as a built JAR or container image; do not expose the full repository as a public web directory.
+
+Cloudflare Email Routing is inbound/forwarding only. Backend outbound notification emails use SMTP configuration. Lead/contact submissions are saved to PostgreSQL as the source of truth; notification email failures are logged safely and must not fail successful form submissions.
 
 In the `prod` profile, the backend writes file logs to `logs/evready-backend.log` by default. `LOG_PATH` changes the log directory when `LOG_FILE` is not set. `LOG_FILE` changes the full file path. In production Docker Compose, backend file logs are bind-mounted to the VPS at `/opt/evready/logs/backend` and should be writable by the container user. Log archives are compressed, roll when they reach 10 MB, are retained for 7 daily periods, and have a configured total archive size cap of 500 MB. Console logging remains available for Docker/container logs. Console logs and file logs are intentionally both present: console logs help Docker/container debugging, and rolling file logs provide application history. Server-level backups, monitoring, and log shipping are separate operational concerns.
 

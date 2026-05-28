@@ -25,3 +25,26 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:/db/db.changelog-master.xml
+
+  mail:
+    host: ${SMTP_HOST:}
+    port: ${SMTP_PORT:587}
+    username: ${SMTP_USERNAME:}
+    password: ${SMTP_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+evready:
+  email:
+    notifications:
+      enabled: ${EMAIL_NOTIFICATIONS_ENABLED:false}
+      from: ${SMTP_FROM:}
+      lead-to: ${LEAD_NOTIFICATION_TO:}
+      contact-to: ${CONTACT_NOTIFICATION_TO:}

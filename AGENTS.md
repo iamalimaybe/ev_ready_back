@@ -24,6 +24,11 @@
 - Never commit real secrets.
 - Verify runtime visibility with `docker compose --env-file /opt/evready/env/backend.prod.env -f docker-compose.prod.yml exec backend sh -lc 'echo VAR_NAME=$VAR_NAME'`, but do not print secret values.
 
+## Browser API CORS Rules
+
+- When adding any new backend HTTP method that browser clients will call, check and update Spring Security CORS allowed methods in the same task.
+- Admin APIs are protected, but browser preflight still needs the method explicitly allowed for credentialed session-cookie requests.
+
 ## File Inspection Rules
 
 Before editing, inspect only the smallest set of files needed for the current task.

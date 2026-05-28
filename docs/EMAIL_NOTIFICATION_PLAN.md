@@ -1,6 +1,6 @@
 # Email Notification Plan
 
-This plan documents the recommended outbound email notification path for future backend work. It is planning documentation only; it does not add SMTP integration, dependencies, credentials, schema changes, admin APIs, auth, or public abuse protection.
+This plan documents the outbound email notification path for backend lead/contact submission alerts. It does not include credentials, schema changes, admin APIs, auth, or public abuse protection.
 
 ## Current State
 
@@ -9,10 +9,11 @@ This plan documents the recommended outbound email notification path for future 
   - `contact@evready.pk`
   - `leads@evready.pk`
 - Cloudflare Email Routing handles inbound forwarding only for the current setup.
-- The backend does not send outbound emails yet.
+- The backend can send outbound notification emails when `EMAIL_NOTIFICATIONS_ENABLED=true` and SMTP environment variables are configured.
 - Get Help submissions are stored in PostgreSQL through `POST /api/v1/leads`.
 - Contact Us submissions are stored separately in PostgreSQL through `POST /api/v1/contact-submissions`.
 - PostgreSQL remains the source of truth for lead/contact submissions.
+- Email delivery is best-effort only. A failed notification must not fail a successfully saved submission.
 
 ## Provider Options
 
@@ -66,13 +67,13 @@ Cons:
 
 ## Recommendation
 
-Use SMTP2GO as the first implementation target unless a later decision chooses another provider. Keep the backend design configurable and provider-light so the project can move to another SMTP provider or email API later without changing lead/contact persistence behavior.
+Resend SMTP is the current production provider target. The backend implementation remains SMTP-based and provider-light so the project can move to another SMTP provider later without changing lead/contact persistence behavior.
 
-The first implementation should be notification-only, not a full email workflow system.
+The implementation is notification-only, not a full email workflow system.
 
 ## Future Backend Implementation Shape
 
-- Add SMTP and notification settings through environment variables only.
+- Configure SMTP and notification settings through environment variables only.
 - Do not commit SMTP credentials.
 - Do not add real credentials or production secrets to examples or docs.
 - Send Get Help notifications to `leads@evready.pk`.
@@ -87,7 +88,7 @@ The first implementation should be notification-only, not a full email workflow 
 
 ## Future Environment Variables
 
-Use environment variables like these when implementation begins. Values shown here are names only, not credentials:
+Use environment variables like these in production. Values shown here are names only, not credentials:
 
 - `EMAIL_NOTIFICATIONS_ENABLED`
 - `SMTP_HOST`
@@ -100,6 +101,17 @@ Use environment variables like these when implementation begins. Values shown he
 
 Production values should live outside the repo, for example in the real production env file or deployment secret store.
 
+Current production SMTP target:
+
+- `SMTP_HOST=smtp.resend.com`
+- `SMTP_PORT=587`
+- `SMTP_USERNAME=resend`
+- `SMTP_PASSWORD` must come from the Resend API key in the environment only.
+- `SMTP_FROM=no-reply@evready.pk`
+- `LEAD_NOTIFICATION_TO=leads@evready.pk`
+- `CONTACT_NOTIFICATION_TO=contact@evready.pk`
+- `EMAIL_NOTIFICATIONS_ENABLED=true`
+
 ## Risks And Boundaries
 
 - Email deliverability depends on the provider, DNS records, sender reputation, and message content.
@@ -111,4 +123,4 @@ Production values should live outside the repo, for example in the real producti
 
 ## Practical First Step Later
 
-When implementation is approved, start with a small configurable SMTP notification service behind `EMAIL_NOTIFICATIONS_ENABLED`. Wire it after successful DB persistence for leads and contact submissions, with failure logging only. Keep admin UI, auth, delivery dashboards, and anti-abuse controls as separate tasks.
+The backend notification service should stay small and configurable behind `EMAIL_NOTIFICATIONS_ENABLED`. Keep admin UI, auth, delivery dashboards, and anti-abuse controls as separate tasks.

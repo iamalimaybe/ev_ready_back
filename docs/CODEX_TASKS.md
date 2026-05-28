@@ -59,6 +59,8 @@
   - Changed files: `docs/LEAD_CONTACT_HANDLING_PLAN.md`, `docs/CODEX_TASKS.md`
 - Document Outbound Email Notification Plan
   - Changed files: `docs/EMAIL_NOTIFICATION_PLAN.md`, `docs/CODEX_TASKS.md`
+- Add SMTP Lead And Contact Email Notifications
+  - Changed files: `build.gradle`, `src/main/resources/application.yml`, `src/main/java/com/ev/ready/notification/SubmissionNotificationService.java`, `src/main/java/com/ev/ready/lead/service/LeadSubmissionService.java`, `src/main/java/com/ev/ready/contact/service/ContactSubmissionService.java`, `docs/EMAIL_NOTIFICATION_PLAN.md`, `README.md`, `docs/CODEX_TASKS.md`
 
 ## Charger Seed Readiness Note
 

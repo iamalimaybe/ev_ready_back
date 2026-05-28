@@ -203,6 +203,75 @@ Requires an active admin session. Returns the current admin session summary:
 
 All other `/api/v1/admin/**` endpoints are protected and must not be public.
 
+## Protected Admin Lead Reads
+
+These endpoints require an active admin session. They expose personal submission data to trusted admins only and must not be public.
+
+### `GET /api/v1/admin/leads`
+
+Returns Get Help lead submissions newest-first, paginated with a stable response shape:
+
+- `content`
+- `page`
+- `size`
+- `totalElements`
+- `totalPages`
+
+Query parameters:
+
+- `page`, optional, default `0`
+- `size`, optional, default `20`, capped at `100`
+
+Lead admin records include:
+
+- `id`
+- `name`
+- `phone`
+- `city`
+- `interestType`
+- `message`
+- `sourcePage`
+- `consentAccepted`
+- `leadStatus`
+- `active`
+- `createdAt`
+- `updatedAt`
+
+### `GET /api/v1/admin/leads/{id}`
+
+Returns one Get Help lead submission for admins. Returns `404` when the record does not exist.
+
+## Protected Admin Contact Submission Reads
+
+These endpoints require an active admin session. They expose personal submission data to trusted admins only and must not be public.
+
+### `GET /api/v1/admin/contact-submissions`
+
+Returns Contact Us submissions newest-first, paginated with the same stable page response shape as admin lead reads.
+
+Query parameters:
+
+- `page`, optional, default `0`
+- `size`, optional, default `20`, capped at `100`
+
+Contact admin records include:
+
+- `id`
+- `name`
+- `email`
+- `phone`
+- `organization`
+- `inquiryType`
+- `message`
+- `sourcePage`
+- `consentAccepted`
+- `createdAt`
+- `updatedAt`
+
+### `GET /api/v1/admin/contact-submissions/{id}`
+
+Returns one Contact Us submission for admins. Returns `404` when the record does not exist.
+
 ## Error Response Format
 
 API errors use a shared JSON response shape:

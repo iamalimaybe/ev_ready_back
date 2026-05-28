@@ -15,6 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,11 +29,14 @@ import org.springframework.web.server.ResponseStatusException;
 public class AdminAuthController {
 
     private final AuthenticationManager authenticationManager;
-    private final HttpSessionSecurityContextRepository securityContextRepository =
-            new HttpSessionSecurityContextRepository();
+    private final SecurityContextRepository securityContextRepository;
 
-    public AdminAuthController(AuthenticationManager authenticationManager) {
+    public AdminAuthController(
+            AuthenticationManager authenticationManager,
+            SecurityContextRepository securityContextRepository
+    ) {
         this.authenticationManager = authenticationManager;
+        this.securityContextRepository = securityContextRepository;
     }
 
     @PostMapping("/login")
@@ -54,6 +58,8 @@ public class AdminAuthController {
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         securityContext.setAuthentication(authentication);
         SecurityContextHolder.setContext(securityContext);
+        HttpSession session = httpRequest.getSession(true);
+        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
         securityContextRepository.saveContext(securityContext, httpRequest, httpResponse);
 
         return response(authentication, "Admin login successful.");

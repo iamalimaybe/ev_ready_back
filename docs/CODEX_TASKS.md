@@ -44,6 +44,9 @@
 - Document Live Production Deployment State
 - Document Completed VPS Hardening Steps
 - Add Production Smoke Test Checklist
+- Complete Frontend/Backend Integration and Live Production Alignment
+- Update Production Logging Bind Mount, Rollback, Backup Restore-Test, and API Contract Docs
+  - Changed files: `docker-compose.prod.yml`, `README.md`, `docs/API_CONTRACT.md`, `docs/DATA_MODEL.md`, `docs/DEPLOYMENT_PLAN.md`, `docs/CODEX_TASKS.md`
 
 ## Charger Seed Readiness Note
 
@@ -55,4 +58,7 @@
 
 ## Next Tasks
 
-- Connect frontend to backend APIs later
+- Add admin-only workflows only after authentication and authorization are designed.
+- Consider CAPTCHA/rate limiting for public write endpoints before broader marketing traffic.
+- Automate daily PostgreSQL backups later, after manual backup and restore-test practice is proven.
+- Consider off-server backup storage later.

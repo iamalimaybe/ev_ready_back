@@ -53,9 +53,10 @@ EVReady Pakistan is live in production.
 - Recommended shape:
   - Main domain for frontend.
   - `api.evready.pk` for backend.
-- Production `CORS_ALLOWED_ORIGINS` should later include:
+- Production `CORS_ALLOWED_ORIGINS` should include only:
   - `https://evready.pk`
-  - `https://www.evready.pk` only if `www` will be used.
+  - `https://www.evready.pk` only if it is actually needed despite the redirect.
+- Do not use wildcard or localhost origins in production.
 
 ## Production Environment Variables Checklist
 
@@ -70,7 +71,8 @@ EVReady Pakistan is live in production.
 ## Backend Docker Deployment Notes
 
 - `docker-compose.prod.yml` is for backend and PostgreSQL only.
-- Supply secrets and production values through the shell environment or an untracked env file passed to Docker Compose, for example with `--env-file`.
+- Supply secrets and production values through `/opt/evready/env/backend.prod.env` with Docker Compose `--env-file`.
+- The real production env file should not be world-readable. Expected permissions are restrictive, for example `600`.
 - Use `.env.prod.example` only as a placeholder template.
 - Real `.env` files and production secrets must not be committed.
 - PostgreSQL must stay private to the Docker network and must not publish a public port.
@@ -78,6 +80,8 @@ EVReady Pakistan is live in production.
 - The backend is expected to be reached through a reverse proxy later at `api.evready.pk`.
 - Reverse proxy/HTTPS setup is separate.
 - Frontend deployment is separate.
+- Production backend file logs are bind-mounted to `/opt/evready/logs/backend`.
+- Before the first bind-mount deployment, create the host log directory and make it writable by the container's `evready` user.
 
 ## Production Operations
 
@@ -93,6 +97,46 @@ EVReady Pakistan is live in production.
 
 - Daily automated backups are not enabled yet.
 - Logs are app-rolled and are not backups.
+- Old Docker named volume `backend_backend_logs` may still exist after the logging bind mount deployment. Leave it in place initially as historical log fallback.
+
+## Production Logging
+
+- Docker console logs are viewed with:
+
+```bash
+docker compose --env-file /opt/evready/env/backend.prod.env -f docker-compose.prod.yml logs --tail=200 backend
+```
+
+- Spring Boot rolling file logs are written to `LOG_PATH` / `LOG_FILE`.
+- Production backend file logs are accessible on the host at `/opt/evready/logs/backend`.
+- Before first use, prepare the host log directory:
+
+```bash
+sudo mkdir -p /opt/evready/logs/backend
+docker compose --env-file /opt/evready/env/backend.prod.env -f docker-compose.prod.yml build backend
+docker compose --env-file /opt/evready/env/backend.prod.env -f docker-compose.prod.yml run --rm --no-deps --user root --entrypoint chown backend -R evready:evready /app/logs
+```
+
+- Useful file-log commands:
+
+```bash
+tail -n 200 /opt/evready/logs/backend/evready-backend.log
+ls -lah /opt/evready/logs/backend
+du -sh /opt/evready/logs/backend
+```
+
+- Console logs and file logs are intentionally both present:
+  - Console logs help Docker/container debugging.
+  - File logs provide rolling application history.
+- Rolling logs are not backups.
+
+## Manual Backup Restore-Test
+
+- Creating backup files is not enough; periodically prove a backup can be restored.
+- Restore-test only into a temporary test database/container, never into the production `postgres` service.
+- Use a disposable PostgreSQL container or temporary database name, restore the selected dump there, run basic row-count/sanity checks, then remove only the temporary test resources.
+- Do not restore over production unless intentionally performing disaster recovery.
+- Do not use production volume deletion commands during restore testing.
 
 ## Production Smoke Test Checklist
 
@@ -131,6 +175,7 @@ Backup check:
 - Run `/opt/evready/scripts/backup-postgres.sh` after successful deployment or smoke test.
 - Confirm backup file exists.
 - Backups are manual for now.
+- Periodically restore-test a backup into a temporary test database/container.
 
 Cloudflare check:
 
@@ -149,6 +194,21 @@ Cloudflare check:
 
 - Production VPS clones should stay on `main`.
 - Run a manual DB backup before risky backend migrations or data changes.
+- Pull latest `main` on the VPS.
+- Rebuild/restart backend:
+
+```bash
+docker compose --env-file /opt/evready/env/backend.prod.env -f docker-compose.prod.yml up -d --build backend
+```
+
+- Rebuild/restart frontend only if frontend code changed.
+- Check backend and postgres containers are running and healthy.
+- Check Caddy status.
+- Check API smoke endpoints:
+  - `https://api.evready.pk/api/v1/vehicles`
+  - `https://api.evready.pk/api/v1/chargers`
+- For code/container rollback, check out or reset the VPS clone to the intended previous Git commit, then rebuild/restart the affected service.
+- Database migrations may not be safely reversible by Git rollback alone. Treat migration rollback as a separate database recovery task and restore from a known-good backup only when intentionally doing disaster recovery.
 - Avoid dangerous Docker volume commands in production, including:
   - `docker compose down -v`
   - `docker volume rm`
@@ -165,19 +225,6 @@ Cloudflare check:
   - IDE run configuration
   - Gradle `bootRun` environment
 
-## Logging Checklist
-
-- Production file logs are enabled in the `prod` profile.
-- Default log file should be `logs/evready-backend.log`.
-- `LOG_PATH` sets the log directory when `LOG_FILE` is not set.
-- `LOG_FILE` sets the full file path.
-- Logs roll/archive at `10MB`.
-- Archives are retained for 7 daily periods.
-- Total archive size cap should be documented if configured.
-- Log directory must exist and be writable by the app process.
-- Console logging remains available for Docker/container logs.
-- Rolling logs are not backups.
-
 ## Security Checklist
 
 - PostgreSQL must not be exposed publicly.
@@ -185,14 +232,16 @@ Cloudflare check:
 - SSH key login is preferred.
 - Production secrets must not be committed.
 - HTTPS is required before public launch.
-- CORS must allow only the real frontend domain in production.
+- CORS must allow only `https://evready.pk` in production, plus `https://www.evready.pk` only if actually needed despite redirect.
 - Lead/contact endpoints may need CAPTCHA or rate limiting before public marketing.
 
 ## Backup Checklist
 
 - PostgreSQL volume is not a backup.
-- Plan a daily `pg_dump`.
-- Keep at least 7 days of backups.
+- Keep manual `pg_dump` backups before risky backend migrations, seed changes, or production data work.
+- Backup creation alone is not enough; periodically restore-test backups.
+- Restore-test only into a temporary test database/container.
+- Do not restore over production unless intentionally performing disaster recovery.
 - Later, move backups off-server if possible.
 
 ## Manual External Steps To Do Later

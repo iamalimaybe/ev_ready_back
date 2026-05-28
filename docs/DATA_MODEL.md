@@ -10,6 +10,8 @@ Internal source/provenance fields support production seed data quality. `sourceU
 
 - `verificationStatus`
 
+`OFFICIAL` means the vehicle data is source-backed from an official OEM, operator, distributor, or similar source. It does not mean EVReady personally audited, field-verified, or guarantees specs or pricing.
+
 `batteryCapacityKwh` supports up to 3 decimal places so smaller EV bike and scooter battery values can be stored without rounding.
 
 ## Charger
@@ -43,6 +45,8 @@ Field summary:
 Charger uses a `ChargerType` reference for connector/filter information.
 
 `chargingType`, `status`, and `verificationStatus` are Java enums. The database should not add CHECK constraints for these fields unless explicitly requested later.
+
+`sourceUrl`, `sourceLabel`, and `sourceCheckedAt` remain internal provenance fields. `verificationStatus` is exposed on public charger response DTOs for frontend source-confidence badges. `OFFICIAL` means the charger data is source-backed from an official operator, network, distributor, or similar source; it must not imply live charger availability, verified price, guaranteed charger status, or EVReady field verification.
 
 ## LeadSubmission
 
@@ -99,5 +103,5 @@ Contact submissions are separate from Get Help leads and are not exposed through
 - Every JPA entity should include equals and hashCode.
 - Ratings/reviews are deferred and should later be separate tables/entities.
 - Vehicle `sourceUrl`, `sourceLabel`, and `sourceCheckedAt` fields remain internal. Vehicle public response DTOs expose `verificationStatus` only for frontend source-confidence badges.
-- Charger source/provenance fields remain internal data-quality fields for now and should not be exposed in public API response DTOs until an internal/admin contract is designed.
+- Charger `sourceUrl`, `sourceLabel`, and `sourceCheckedAt` fields remain internal. Charger public response DTOs expose `verificationStatus` only for frontend source-confidence badges.
 - Vehicle `batteryCapacityKwh` should preserve up to 3 decimal places.

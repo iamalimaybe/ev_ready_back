@@ -237,6 +237,15 @@ Lead admin records include:
 - `createdAt`
 - `updatedAt`
 
+### `GET /api/v1/admin/leads/statuses`
+
+Returns lead status options for admin UI controls as a plain JSON array. Values are derived from the backend `LeadStatus` enum.
+
+Each option includes:
+
+- `value`
+- `label`
+
 ### `GET /api/v1/admin/leads/{id}`
 
 Returns one Get Help lead submission for admins. Returns `404` when the record does not exist.
@@ -244,6 +253,8 @@ Returns one Get Help lead submission for admins. Returns `404` when the record d
 ### `PATCH /api/v1/admin/leads/{id}/status`
 
 Updates only the `leadStatus` for one Get Help lead submission. Returns the updated admin lead record. Returns `404` when the record does not exist.
+
+This protected admin endpoint is called by browser clients with session credentials, so backend CORS allowed methods must include `PATCH`.
 
 Request fields:
 

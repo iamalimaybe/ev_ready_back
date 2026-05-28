@@ -5,12 +5,16 @@ import com.ev.ready.common.PageResponse;
 import com.ev.ready.lead.domain.LeadSubmission;
 import com.ev.ready.lead.dto.AdminLeadSubmissionResponse;
 import com.ev.ready.lead.dto.CreateLeadSubmissionRequest;
+import com.ev.ready.lead.dto.LeadStatusOptionResponse;
 import com.ev.ready.lead.dto.LeadSubmissionResponse;
 import com.ev.ready.lead.dto.UpdateLeadStatusRequest;
 import com.ev.ready.lead.enums.LeadStatus;
 import com.ev.ready.lead.repository.LeadSubmissionRepository;
 import com.ev.ready.notification.SubmissionNotificationService;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -72,6 +76,12 @@ public class LeadSubmissionService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Lead submission not found."));
     }
 
+    public List<LeadStatusOptionResponse> getAdminLeadStatusOptions() {
+        return Arrays.stream(LeadStatus.values())
+                .map(status -> new LeadStatusOptionResponse(status.name(), label(status)))
+                .toList();
+    }
+
     @Transactional
     public AdminLeadSubmissionResponse updateAdminLeadStatus(
             Long id,
@@ -95,5 +105,13 @@ public class LeadSubmissionService {
                 Sort.Order.desc("createdAt"),
                 Sort.Order.desc("id")
         ));
+    }
+
+    private String label(LeadStatus status) {
+        String[] words = status.name().toLowerCase(Locale.ROOT).split("_");
+        for (int i = 0; i < words.length; i++) {
+            words[i] = words[i].substring(0, 1).toUpperCase(Locale.ROOT) + words[i].substring(1);
+        }
+        return String.join(" ", words);
     }
 }

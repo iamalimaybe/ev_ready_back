@@ -2,9 +2,11 @@ package com.ev.ready.admin.lead.controller;
 
 import com.ev.ready.common.PageResponse;
 import com.ev.ready.lead.dto.AdminLeadSubmissionResponse;
+import com.ev.ready.lead.dto.LeadStatusOptionResponse;
 import com.ev.ready.lead.dto.UpdateLeadStatusRequest;
 import com.ev.ready.lead.service.LeadSubmissionService;
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +32,11 @@ public class AdminLeadSubmissionController {
             @RequestParam(required = false) Integer size
     ) {
         return leadSubmissionService.getAdminLeadSubmissions(page, size);
+    }
+
+    @GetMapping("/statuses")
+    public List<LeadStatusOptionResponse> getLeadStatusOptions() {
+        return leadSubmissionService.getAdminLeadStatusOptions();
     }
 
     @GetMapping("/{id}")

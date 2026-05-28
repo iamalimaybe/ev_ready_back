@@ -173,6 +173,105 @@ Returns `201 Created` with:
 
 Public or admin Contact Us retrieval APIs are not part of the first release.
 
+## Protected Admin Auth
+
+Admin auth endpoints are reserved for future admin UI use. They do not expose lead/contact submissions or catalog management data.
+
+### `POST /api/v1/admin/auth/login`
+
+Authenticates the configured admin using environment-backed credentials. On success, creates an admin session cookie and returns a minimal response:
+
+- `authenticated`
+- `username`
+- `roles`
+- `message`
+
+Failed login returns a safe error response and must not expose credential details.
+
+### `POST /api/v1/admin/auth/logout`
+
+Requires an active admin session. Invalidates the current admin session and returns `204 No Content`.
+
+### `GET /api/v1/admin/auth/me`
+
+Requires an active admin session. Returns the current admin session summary:
+
+- `authenticated`
+- `username`
+- `roles`
+- `message`
+
+All other `/api/v1/admin/**` endpoints are protected and must not be public.
+
+## Protected Admin Lead Reads
+
+These endpoints require an active admin session. They expose personal submission data to trusted admins only and must not be public.
+
+### `GET /api/v1/admin/leads`
+
+Returns Get Help lead submissions newest-first, paginated with a stable response shape:
+
+- `content`
+- `page`
+- `size`
+- `totalElements`
+- `totalPages`
+
+Query parameters:
+
+- `page`, optional, default `0`
+- `size`, optional, default `20`, capped at `100`
+
+Lead admin records include:
+
+- `id`
+- `name`
+- `phone`
+- `city`
+- `interestType`
+- `message`
+- `sourcePage`
+- `consentAccepted`
+- `leadStatus`
+- `active`
+- `createdAt`
+- `updatedAt`
+
+### `GET /api/v1/admin/leads/{id}`
+
+Returns one Get Help lead submission for admins. Returns `404` when the record does not exist.
+
+## Protected Admin Contact Submission Reads
+
+These endpoints require an active admin session. They expose personal submission data to trusted admins only and must not be public.
+
+### `GET /api/v1/admin/contact-submissions`
+
+Returns Contact Us submissions newest-first, paginated with the same stable page response shape as admin lead reads.
+
+Query parameters:
+
+- `page`, optional, default `0`
+- `size`, optional, default `20`, capped at `100`
+
+Contact admin records include:
+
+- `id`
+- `name`
+- `email`
+- `phone`
+- `organization`
+- `inquiryType`
+- `message`
+- `sourcePage`
+- `consentAccepted`
+- `createdAt`
+- `updatedAt`
+
+### `GET /api/v1/admin/contact-submissions/{id}`
+
+Returns one Contact Us submission for admins. Returns `404` when the record does not exist.
+
 ## Error Response Format
 
 API errors use a shared JSON response shape:

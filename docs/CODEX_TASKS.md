@@ -63,6 +63,22 @@
   - Changed files: `build.gradle`, `src/main/resources/application.yml`, `src/main/java/com/ev/ready/notification/SubmissionNotificationService.java`, `src/main/java/com/ev/ready/lead/service/LeadSubmissionService.java`, `src/main/java/com/ev/ready/contact/service/ContactSubmissionService.java`, `docs/EMAIL_NOTIFICATION_PLAN.md`, `README.md`, `docs/CODEX_TASKS.md`
 - Wire Production Email Notification Env Vars Into Backend Container
   - Changed files: `docker-compose.prod.yml`, `.env.prod.example`, `AGENTS.md`, `README.md`, `docs/DEPLOYMENT_PLAN.md`, `docs/EMAIL_NOTIFICATION_PLAN.md`, `docs/CODEX_TASKS.md`
+- Document Backend Admin MVP Plan
+  - Changed files: `docs/ADMIN_MVP_PLAN.md`, `README.md`, `docs/DECISIONS.md`, `docs/CODEX_TASKS.md`
+- Add Minimal Backend Admin Authentication Foundation
+  - Changed files: `build.gradle`, `src/main/resources/application.yml`, `.env.prod.example`, `src/main/java/com/ev/ready/config/SecurityConfig.java`, `src/main/java/com/ev/ready/admin/auth/controller/AdminAuthController.java`, `src/main/java/com/ev/ready/admin/auth/dto/AdminLoginRequest.java`, `src/main/java/com/ev/ready/admin/auth/dto/AdminAuthResponse.java`, `README.md`, `docs/ADMIN_MVP_PLAN.md`, `docs/API_CONTRACT.md`, `docs/DECISIONS.md`, `docs/CODEX_TASKS.md`
+- Wire Production Admin Auth Env Vars Into Backend Container
+  - Changed files: `docker-compose.prod.yml`, `docs/CODEX_TASKS.md`
+- Remove ObjectMapper Usage from Security Auth Error Responses
+  - Changed files: `src/main/java/com/ev/ready/config/SecurityConfig.java`, `build.gradle`, `docs/CODEX_TASKS.md`
+- Add Protected Read-Only Admin Submission APIs
+  - Changed files: `src/main/java/com/ev/ready/common/PageResponse.java`, `src/main/java/com/ev/ready/lead/dto/AdminLeadSubmissionResponse.java`, `src/main/java/com/ev/ready/contact/dto/AdminContactSubmissionResponse.java`, `src/main/java/com/ev/ready/admin/lead/controller/AdminLeadSubmissionController.java`, `src/main/java/com/ev/ready/admin/contact/controller/AdminContactSubmissionController.java`, `src/main/java/com/ev/ready/lead/service/LeadSubmissionService.java`, `src/main/java/com/ev/ready/contact/service/ContactSubmissionService.java`, `docs/ADMIN_MVP_PLAN.md`, `docs/API_CONTRACT.md`, `docs/CODEX_TASKS.md`
+- Fix Admin Session SecurityContext Persistence
+  - Changed files: `src/main/java/com/ev/ready/config/SecurityConfig.java`, `src/main/java/com/ev/ready/admin/auth/controller/AdminAuthController.java`, `docs/CODEX_TASKS.md`
+- Store Admin SecurityContext Explicitly In HTTP Session
+  - Changed files: `src/main/java/com/ev/ready/admin/auth/controller/AdminAuthController.java`, `docs/CODEX_TASKS.md`
+- Move Credentialed API CORS Into Spring Security
+  - Changed files: `src/main/java/com/ev/ready/config/SecurityConfig.java`, `src/main/java/com/ev/ready/config/CorsConfig.java`, `docs/CODEX_TASKS.md`
 
 ## Charger Seed Readiness Note
 

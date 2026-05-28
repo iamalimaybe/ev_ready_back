@@ -10,7 +10,10 @@
 - Every entity should include audit fields by default.
 - Every entity should include equals and hashCode.
 - Reviews/ratings are deferred until persistence, moderation, and spam handling are planned.
-- Admin UI/auth are deferred.
+- Minimal admin auth foundation exists for protected admin routes.
+- Admin UI and admin data APIs remain deferred.
+- Admin data retrieval and write workflows remain deferred until access-control planning is completed.
+- Lead/contact retrieval must not be public; future retrieval endpoints must be protected admin APIs.
 - Public frontend-facing read APIs should return active records only; apply `isActive = true` filtering in backend queries for future public reads.
 - First-release public catalog APIs are unauthenticated because vehicle and charger catalog data is public.
 - Frontend clients must not store fixed backend credentials.

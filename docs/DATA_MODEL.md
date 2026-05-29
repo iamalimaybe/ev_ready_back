@@ -115,7 +115,7 @@ Field summary:
 
 `experienceType` is a Java enum with controlled reviewer-context values: `OWNER`, `FORMER_OWNER`, `TEST_DRIVE`, `BOOKED`, `CONSIDERING`, `RESEARCH_ONLY`, and `OTHER`.
 
-Public submissions default to `PENDING`. Vehicle reviews are not exposed publicly yet and do not affect vehicle list/detail DTOs or rating aggregates. Future public display must use approved records only.
+Public submissions default to `PENDING`. Protected admin APIs can read submissions and update `reviewStatus`, `moderatedAt`, `moderatedBy`, `moderationReason`, and update audit fields. Vehicle reviews are not exposed publicly yet and do not affect vehicle list/detail DTOs or rating aggregates. Future public display must use approved records only.
 
 ## Data Conventions
 
@@ -134,7 +134,7 @@ Public submissions default to `PENDING`. Vehicle reviews are not exposed publicl
 
 ## Future Planned Reviews And Feedback
 
-Vehicle review submission persistence exists for pending moderation only. Charger feedback is not implemented yet. Future charger feedback persistence should use a separate entity, likely `ChargerFeedback`, rather than storing user-submitted feedback directly on `Charger`.
+Vehicle review submission persistence and protected admin moderation APIs exist. Charger feedback is not implemented yet. Future charger feedback persistence should use a separate entity, likely `ChargerFeedback`, rather than storing user-submitted feedback directly on `Charger`.
 
 Future review/feedback entities should follow the same ID and audit conventions: `BIGINT` / `Long` primary keys, `createdAt`, `createdBy`, `updatedAt`, and `updatedBy`. Moderation metadata such as status, moderator, timestamp, and reason should be included when the feature is implemented. Avoid entity relationships unless the implementation later needs them.
 

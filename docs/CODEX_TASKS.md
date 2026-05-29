@@ -102,6 +102,9 @@
 - Add Protected Admin Vehicle Review Moderation APIs
   - Added protected admin vehicle review list, detail, status options, and moderation status update APIs without public review display, rating aggregates, charger feedback, frontend code, or public auth.
   - Changed files: `src/main/java/com/ev/ready/admin/review/controller/AdminVehicleReviewController.java`, `src/main/java/com/ev/ready/review/dto/AdminVehicleReviewResponse.java`, `src/main/java/com/ev/ready/review/dto/UpdateVehicleReviewStatusRequest.java`, `src/main/java/com/ev/ready/review/dto/VehicleReviewStatusOptionResponse.java`, `src/main/java/com/ev/ready/review/repository/VehicleReviewRepository.java`, `src/main/java/com/ev/ready/review/service/VehicleReviewService.java`, `docs/API_CONTRACT.md`, `docs/DATA_MODEL.md`, `docs/USER_REVIEWS_AND_FEEDBACK_PLAN.md`, `docs/CODEX_TASKS.md`
+- Add Public Approved Vehicle Rating Summaries And Reviews
+  - Added approved-only vehicle rating summaries to public vehicle list/detail responses and approved-only public vehicle review retrieval for detail pages, without exposing pending/rejected/spam reviews, charger feedback, frontend code, or public auth.
+  - Changed files: `src/main/java/com/ev/ready/catalog/controller/VehicleController.java`, `src/main/java/com/ev/ready/catalog/dto/VehicleResponse.java`, `src/main/java/com/ev/ready/review/controller/VehicleReviewController.java`, `src/main/java/com/ev/ready/review/dto/PublicVehicleReviewResponse.java`, `src/main/java/com/ev/ready/review/dto/VehicleRatingSummaryResponse.java`, `src/main/java/com/ev/ready/review/repository/VehicleRatingSummaryProjection.java`, `src/main/java/com/ev/ready/review/repository/VehicleReviewRepository.java`, `src/main/java/com/ev/ready/review/service/VehicleReviewService.java`, `docs/API_CONTRACT.md`, `docs/DATA_MODEL.md`, `docs/USER_REVIEWS_AND_FEEDBACK_PLAN.md`, `docs/DECISIONS.md`, `docs/CODEX_TASKS.md`
 
 ## Charger Seed Readiness Note
 

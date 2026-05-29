@@ -6,7 +6,9 @@ import com.ev.ready.common.util.StringUtil;
 import com.ev.ready.review.domain.VehicleReview;
 import com.ev.ready.review.dto.AdminVehicleReviewResponse;
 import com.ev.ready.review.dto.CreateVehicleReviewRequest;
+import com.ev.ready.review.dto.PublicVehicleReviewResponse;
 import com.ev.ready.review.dto.UpdateVehicleReviewStatusRequest;
+import com.ev.ready.review.dto.VehicleRatingSummaryResponse;
 import com.ev.ready.review.dto.VehicleReviewExperienceTypeOptionResponse;
 import com.ev.ready.review.dto.VehicleReviewSubmissionResponse;
 import com.ev.ready.review.dto.VehicleReviewStatusOptionResponse;
@@ -14,11 +16,16 @@ import com.ev.ready.review.enums.VehicleReviewExperienceType;
 import com.ev.ready.review.enums.VehicleReviewStatus;
 import com.ev.ready.review.repository.VehicleReviewRepository;
 import jakarta.persistence.criteria.Predicate;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -32,6 +39,8 @@ public class VehicleReviewService {
 
     private static final int DEFAULT_PAGE_SIZE = 20;
     private static final int MAX_PAGE_SIZE = 100;
+    private static final int DEFAULT_PUBLIC_REVIEW_PAGE_SIZE = 10;
+    private static final int MAX_PUBLIC_REVIEW_PAGE_SIZE = 50;
     private static final String PUBLIC_AUDIT_USER = "public";
 
     private final VehicleReviewRepository vehicleReviewRepository;
@@ -76,6 +85,46 @@ public class VehicleReviewService {
                         label(experienceType)
                 ))
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public VehicleRatingSummaryResponse getApprovedRatingSummary(Long vehicleId) {
+        return getApprovedRatingSummaries(List.of(vehicleId)).getOrDefault(
+                vehicleId,
+                VehicleRatingSummaryResponse.empty()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, VehicleRatingSummaryResponse> getApprovedRatingSummaries(Collection<Long> vehicleIds) {
+        if (vehicleIds == null || vehicleIds.isEmpty()) {
+            return Map.of();
+        }
+
+        return vehicleReviewRepository.findRatingSummaries(vehicleIds, VehicleReviewStatus.APPROVED)
+                .stream()
+                .collect(Collectors.toMap(
+                        summary -> summary.getVehicleId(),
+                        summary -> new VehicleRatingSummaryResponse(
+                                roundAverage(summary.getAverageRating()),
+                                summary.getRatingCount()
+                        )
+                ));
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<PublicVehicleReviewResponse> getApprovedVehicleReviews(
+            Long vehicleId,
+            Integer page,
+            Integer size
+    ) {
+        vehicleReadService.ensurePublicVehicleExists(vehicleId);
+
+        return PageResponse.from(vehicleReviewRepository.findByVehicleIdAndReviewStatus(
+                vehicleId,
+                VehicleReviewStatus.APPROVED,
+                publicReviewPageRequest(page, size)
+        ).map(PublicVehicleReviewResponse::from));
     }
 
     @Transactional(readOnly = true)
@@ -154,6 +203,24 @@ public class VehicleReviewService {
                 Sort.Order.desc("createdAt"),
                 Sort.Order.desc("id")
         ));
+    }
+
+    private PageRequest publicReviewPageRequest(Integer page, Integer size) {
+        int safePage = page == null || page < 0 ? 0 : page;
+        int safeSize = size == null || size < 1
+                ? DEFAULT_PUBLIC_REVIEW_PAGE_SIZE
+                : Math.min(size, MAX_PUBLIC_REVIEW_PAGE_SIZE);
+        return PageRequest.of(safePage, safeSize, Sort.by(
+                Sort.Order.desc("createdAt"),
+                Sort.Order.desc("id")
+        ));
+    }
+
+    private BigDecimal roundAverage(Double averageRating) {
+        if (averageRating == null) {
+            return null;
+        }
+        return BigDecimal.valueOf(averageRating).setScale(1, RoundingMode.HALF_UP);
     }
 
     private String label(VehicleReviewExperienceType experienceType) {

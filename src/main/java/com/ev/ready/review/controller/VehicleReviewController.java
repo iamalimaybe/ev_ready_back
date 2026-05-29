@@ -1,6 +1,8 @@
 package com.ev.ready.review.controller;
 
 import com.ev.ready.review.dto.CreateVehicleReviewRequest;
+import com.ev.ready.common.PageResponse;
+import com.ev.ready.review.dto.PublicVehicleReviewResponse;
 import com.ev.ready.review.dto.VehicleReviewExperienceTypeOptionResponse;
 import com.ev.ready.review.dto.VehicleReviewSubmissionResponse;
 import com.ev.ready.review.service.VehicleReviewService;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,5 +40,14 @@ public class VehicleReviewController {
             @Valid @RequestBody CreateVehicleReviewRequest request
     ) {
         return vehicleReviewService.createVehicleReview(vehicleId, request);
+    }
+
+    @GetMapping("/{vehicleId}/reviews")
+    public PageResponse<PublicVehicleReviewResponse> getApprovedVehicleReviews(
+            @PathVariable Long vehicleId,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size
+    ) {
+        return vehicleReviewService.getApprovedVehicleReviews(vehicleId, page, size);
     }
 }

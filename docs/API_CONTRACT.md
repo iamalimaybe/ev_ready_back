@@ -379,9 +379,82 @@ Allowed `contactStatus` values:
 
 This endpoint does not imply a customer callback, SLA, internal notes workflow, or lead status behavior changes.
 
+## Protected Admin Vehicle Review APIs
+
+These endpoints require an active admin session. They expose submitted review text and moderation metadata to trusted admins only and must not be public.
+
+### `GET /api/v1/admin/vehicle-reviews`
+
+Returns vehicle review submissions newest-first, paginated with the same stable page response shape as admin lead/contact reads.
+
+Query parameters:
+
+- `page`, optional, default `0`
+- `size`, optional, default `20`, capped at `100`
+- `reviewStatus`, optional
+- `vehicleId`, optional
+
+Filtering is applied by repository query, not in memory. When `reviewStatus` is provided, it must match a `VehicleReviewStatus` enum value.
+
+Admin vehicle review records include:
+
+- `id`
+- `vehicleId`
+- `rating`
+- `reviewText`
+- `displayName`
+- `city`
+- `experienceType`
+- `reviewStatus`
+- `moderatedAt`
+- `moderatedBy`
+- `moderationReason`
+- `createdAt`
+- `createdBy`
+- `updatedAt`
+- `updatedBy`
+
+### `GET /api/v1/admin/vehicle-reviews/statuses`
+
+Returns vehicle review moderation status options for admin UI controls as a plain JSON array. Values are derived from the backend `VehicleReviewStatus` enum.
+
+Each option includes:
+
+- `value`
+- `label`
+
+### `GET /api/v1/admin/vehicle-reviews/{id}`
+
+Returns one vehicle review submission for admins. Returns `404` when the review does not exist.
+
+### `PATCH /api/v1/admin/vehicle-reviews/{id}/status`
+
+Updates moderation status and moderation metadata for one vehicle review submission. Returns the updated admin vehicle review record. Returns `404` when the review does not exist.
+
+This protected admin endpoint is called by browser clients with session credentials, so backend CORS allowed methods must include `PATCH`.
+
+Request fields:
+
+- `reviewStatus`
+- `moderationReason`
+
+Validation:
+
+- `reviewStatus` is required and must be a valid `VehicleReviewStatus`.
+- `moderationReason` must be 500 characters or fewer.
+
+Allowed `reviewStatus` values:
+
+- `PENDING`
+- `APPROVED`
+- `REJECTED`
+- `SPAM`
+
+Updating a review status does not publish reviews publicly, calculate rating aggregates, add stars to vehicle cards, or imply EVReady verified the user-submitted claim.
+
 ## Future Planned Reviews And Feedback APIs
 
-Public vehicle review submission and vehicle review experience type options are implemented above. Rating aggregates, public review retrieval, charger feedback, and review moderation APIs are not implemented yet. This section is planning-only and must not be treated as an active API contract except where an endpoint is documented elsewhere as implemented.
+Public vehicle review submission, vehicle review experience type options, and protected admin vehicle review moderation APIs are implemented above. Rating aggregates, public review retrieval, and charger feedback APIs are not implemented yet. This section is planning-only and must not be treated as an active API contract except where an endpoint is documented elsewhere as implemented.
 
 Future public submit endpoints may include:
 
@@ -405,8 +478,6 @@ These endpoints must not return unmoderated content or internal-only contact fie
 
 Future protected admin moderation endpoints may include:
 
-- `GET /api/v1/admin/vehicle-reviews`
-- `PATCH /api/v1/admin/vehicle-reviews/{id}/status`
 - `GET /api/v1/admin/charger-feedback`
 - `PATCH /api/v1/admin/charger-feedback/{id}/status`
 

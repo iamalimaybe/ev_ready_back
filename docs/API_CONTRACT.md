@@ -42,6 +42,13 @@ Returns a list of vehicles for the catalog.
 
 Public vehicle list responses include `verificationStatus`. Frontend clients use this value for source-confidence badges. `OFFICIAL` means the vehicle data came from an official OEM, operator, or distributor-type source; the UI must not describe it as "Verified" or imply EVReady personally audited vehicle specs or prices.
 
+Public vehicle list responses include `ratingSummary` based only on approved vehicle reviews:
+
+- `averageRating`
+- `ratingCount`
+
+`ratingCount` counts approved reviews only. `averageRating` is rounded to max 1 decimal place and is `null` when there are no approved reviews. Pending, rejected, and spam reviews must not affect public rating summaries.
+
 `sourceUrl` and `sourceLabel` remain internal and are not exposed in public vehicle responses. Missing or `null` `verificationStatus` values should be treated by frontend clients as `UNVERIFIED`.
 
 Planned filters:
@@ -65,7 +72,7 @@ Planned sort values:
 
 Returns a single active vehicle by ID, including brand and charger type display info. Returns 404 when the vehicle does not exist or is not active.
 
-Public vehicle detail responses include `verificationStatus` with the same frontend handling rules as vehicle list responses.
+Public vehicle detail responses include `verificationStatus` and `ratingSummary` with the same frontend handling rules as vehicle list responses.
 
 ### `GET /api/v1/vehicles/reviews/experience-types`
 
@@ -115,6 +122,37 @@ Returns `201 Created` with:
 - `message`
 
 `reviewStatus` is `PENDING` for public submissions. The response message must make clear that the review was submitted for moderation and is not published.
+
+### `GET /api/v1/vehicles/{vehicleId}/reviews`
+
+Returns approved vehicle reviews for a public vehicle detail page. Returns `404` when the vehicle does not exist or is not active.
+
+Only reviews with `reviewStatus = APPROVED` are returned. Pending, rejected, and spam reviews are never returned by this endpoint. This endpoint does not imply EVReady verified user-submitted claims.
+
+Query parameters:
+
+- `page`, optional, default `0`
+- `size`, optional, default `10`, capped at `50`
+
+Returns a stable page response:
+
+- `content`
+- `page`
+- `size`
+- `totalElements`
+- `totalPages`
+
+Public approved review records include only safe public fields:
+
+- `id`
+- `rating`
+- `reviewText`
+- `displayName`
+- `city`
+- `experienceType`
+- `createdAt`
+
+Public approved review records do not include moderation metadata, `reviewStatus`, audit user fields, or internal/admin fields.
 
 ## Chargers
 
@@ -454,7 +492,7 @@ Updating a review status does not publish reviews publicly, calculate rating agg
 
 ## Future Planned Reviews And Feedback APIs
 
-Public vehicle review submission, vehicle review experience type options, and protected admin vehicle review moderation APIs are implemented above. Rating aggregates, public review retrieval, and charger feedback APIs are not implemented yet. This section is planning-only and must not be treated as an active API contract except where an endpoint is documented elsewhere as implemented.
+Public vehicle review submission, vehicle review experience type options, protected admin vehicle review moderation APIs, approved-only vehicle rating summaries, and approved-only public vehicle review retrieval are implemented above. Charger feedback APIs are not implemented yet. This section is planning-only and must not be treated as an active API contract except where an endpoint is documented elsewhere as implemented.
 
 Future public submit endpoints may include:
 
@@ -464,14 +502,12 @@ Public submit endpoints should create pending submissions only. They should not 
 
 Future public approved-only aggregate endpoints may support listing cards:
 
-- `GET /api/v1/vehicles/{id}/rating-summary`
 - `GET /api/v1/chargers/{id}/feedback-summary` or `GET /api/v1/chargers/{id}/rating-summary` if charger star ratings are allowed
 
 Listing-card aggregates should include only average rating, stars out of 5, and rating count. Average ratings must use approved reviews only and should display with max 1 decimal place. Pending, rejected, spam, and unmoderated records must not affect public averages.
 
 Future public approved-only review/comment endpoints may support dedicated detail pages:
 
-- `GET /api/v1/vehicles/{id}/reviews`
 - `GET /api/v1/chargers/{id}/feedback`
 
 These endpoints must not return unmoderated content or internal-only contact fields. Detail-page comments must not imply EVReady verifies every user-submitted claim. Charger feedback/comments must not imply live charger availability.

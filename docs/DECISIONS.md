@@ -26,6 +26,7 @@
 - Reviews and charger feedback require moderation before public display or public aggregate use.
 - Vehicle review submitter context uses controlled `VehicleReviewExperienceType` enum values instead of free-text ownership status for cleaner data and frontend dropdown support.
 - Public vehicle review submissions may be accepted without public user authentication, but must default to `PENDING` and remain hidden until future moderation approval.
+- Public vehicle ratings and review retrieval use approved vehicle reviews only; pending, rejected, and spam reviews must not affect public averages or public review pages.
 - Charger feedback must not automatically imply live charger availability or update public charger status without admin review.
 - Public user authentication is deferred for the first review/feedback version unless abuse, ownership, edit/delete, or trust requirements justify it later.
 - Dedicated vehicle and charger detail pages are preferred over modal-based review/comment display.

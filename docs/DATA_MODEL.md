@@ -106,3 +106,11 @@ Contact submissions are separate from Get Help leads and are not exposed publicl
 - Vehicle `sourceUrl`, `sourceLabel`, and `sourceCheckedAt` fields remain internal. Vehicle public response DTOs expose `verificationStatus` only for frontend source-confidence badges.
 - Charger `sourceUrl`, `sourceLabel`, and `sourceCheckedAt` fields remain internal. Charger public response DTOs expose `verificationStatus` only for frontend source-confidence badges.
 - Vehicle `batteryCapacityKwh` should preserve up to 3 decimal places.
+
+## Future Planned Reviews And Feedback
+
+Vehicle reviews and charger feedback are not implemented yet. Future persistence should use separate entities, likely `VehicleReview` and `ChargerFeedback`, rather than storing user-submitted review data directly on `Vehicle` or `Charger`.
+
+Future review/feedback entities should follow the same ID and audit conventions: `BIGINT` / `Long` primary keys, `createdAt`, `createdBy`, `updatedAt`, and `updatedBy`. Moderation metadata such as status, moderator, timestamp, and reason should be included when the feature is implemented. Avoid entity relationships unless the implementation later needs them.
+
+Public rating aggregates should be computed from approved records only. Pending, rejected, spam, and unmoderated records must not affect public averages or public detail-page comments.

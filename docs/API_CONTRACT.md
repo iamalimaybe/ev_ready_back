@@ -330,6 +330,40 @@ Allowed `contactStatus` values:
 
 This endpoint does not imply a customer callback, SLA, internal notes workflow, or lead status behavior changes.
 
+## Future Planned Reviews And Feedback APIs
+
+Reviews, ratings, charger feedback, rating aggregates, and review moderation APIs are not implemented yet. This section is planning-only and must not be treated as an active API contract.
+
+Future public submit endpoints may include:
+
+- `POST /api/v1/vehicles/{id}/reviews`
+- `POST /api/v1/chargers/{id}/feedback`
+
+Public submit endpoints should create pending submissions only. They should not publish the submitted content, expose internal moderation data, or imply EVReady has verified user claims.
+
+Future public approved-only aggregate endpoints may support listing cards:
+
+- `GET /api/v1/vehicles/{id}/rating-summary`
+- `GET /api/v1/chargers/{id}/feedback-summary` or `GET /api/v1/chargers/{id}/rating-summary` if charger star ratings are allowed
+
+Listing-card aggregates should include only average rating, stars out of 5, and rating count. Average ratings must use approved reviews only and should display with max 1 decimal place. Pending, rejected, spam, and unmoderated records must not affect public averages.
+
+Future public approved-only review/comment endpoints may support dedicated detail pages:
+
+- `GET /api/v1/vehicles/{id}/reviews`
+- `GET /api/v1/chargers/{id}/feedback`
+
+These endpoints must not return unmoderated content or internal-only contact fields. Detail-page comments must not imply EVReady verifies every user-submitted claim. Charger feedback/comments must not imply live charger availability.
+
+Future protected admin moderation endpoints may include:
+
+- `GET /api/v1/admin/vehicle-reviews`
+- `PATCH /api/v1/admin/vehicle-reviews/{id}/status`
+- `GET /api/v1/admin/charger-feedback`
+- `PATCH /api/v1/admin/charger-feedback/{id}/status`
+
+Protected moderation endpoints must require an active admin session. Browser-called admin moderation methods must also be reflected in Spring Security CORS allowed methods when implemented.
+
 ## Error Response Format
 
 API errors use a shared JSON response shape:

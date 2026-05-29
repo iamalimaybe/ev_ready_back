@@ -93,6 +93,9 @@
   - Added contact submission status storage, default `NEW` status on public create, protected admin status options, and protected admin status update.
   - Kept contact status admin-only and did not add notes, CSV export, search, or frontend code.
   - Changed files: `src/main/resources/db/changelog/V014__add_contact_submission_status.sql`, `src/main/java/com/ev/ready/contact/enums/ContactSubmissionStatus.java`, `src/main/java/com/ev/ready/contact/domain/ContactSubmission.java`, `src/main/java/com/ev/ready/contact/dto/AdminContactSubmissionResponse.java`, `src/main/java/com/ev/ready/contact/dto/ContactSubmissionStatusOptionResponse.java`, `src/main/java/com/ev/ready/contact/dto/UpdateContactSubmissionStatusRequest.java`, `src/main/java/com/ev/ready/contact/service/ContactSubmissionService.java`, `src/main/java/com/ev/ready/admin/contact/controller/AdminContactSubmissionController.java`, `docs/API_CONTRACT.md`, `docs/DATA_MODEL.md`, `docs/ADMIN_MVP_PLAN.md`, `docs/CODEX_TASKS.md`
+- Document User Reviews And Charger Feedback Plan
+  - Added planning-only notes for vehicle ratings/reviews, charger feedback, approved-only aggregates, dedicated detail pages, moderation, deferred public auth, future APIs, and future data model direction.
+  - Changed files: `docs/USER_REVIEWS_AND_FEEDBACK_PLAN.md`, `README.md`, `docs/API_CONTRACT.md`, `docs/DATA_MODEL.md`, `docs/DECISIONS.md`, `docs/CODEX_TASKS.md`
 
 ## Charger Seed Readiness Note
 

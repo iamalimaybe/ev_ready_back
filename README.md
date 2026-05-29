@@ -23,9 +23,11 @@ Backend service for EVReady Pakistan. The first release provides data APIs for t
 ## Deferred Scope
 
 - Ratings/reviews
-- Admin UI and admin data APIs
+- Admin UI and broader catalog/admin management APIs
 - Payments
 - Maps/live charger integration
+
+See [docs/USER_REVIEWS_AND_FEEDBACK_PLAN.md](docs/USER_REVIEWS_AND_FEEDBACK_PLAN.md) for future planning around vehicle reviews, charger feedback, approved-only rating aggregates, moderation, and detail-page support. Reviews and feedback are not implemented yet.
 
 ## Local Setup
 
@@ -152,6 +154,6 @@ Spring Boot does not automatically read `.env` files. A `.env` file only works i
 
 See [docs/DEPLOYMENT_PLAN.md](docs/DEPLOYMENT_PLAN.md) for the production planning checklist before buying a VPS or domain.
 
-See [docs/ADMIN_MVP_PLAN.md](docs/ADMIN_MVP_PLAN.md) for the deferred backend admin planning notes. Admin APIs/auth are not implemented yet.
+See [docs/ADMIN_MVP_PLAN.md](docs/ADMIN_MVP_PLAN.md) for backend admin planning notes. Minimal admin auth and protected lead/contact workflows exist; broader admin UI and catalog management remain deferred.
 
 See [docs/LOCAL_SETUP.md](docs/LOCAL_SETUP.md) and [docs/LIQUIBASE_GUIDE.md](docs/LIQUIBASE_GUIDE.md) for setup and migration rules.

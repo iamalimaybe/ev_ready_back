@@ -54,6 +54,12 @@ public class VehicleReadService {
         return VehicleResponse.from(vehicle);
     }
 
+    public void ensurePublicVehicleExists(Long id) {
+        if (vehicleRepository.findPublicById(id).isEmpty()) {
+            throw new ResponseStatusException(NOT_FOUND, "Vehicle not found");
+        }
+    }
+
     private Specification<Vehicle> vehicleSpecification(
             VehicleType type,
             Long brandId,

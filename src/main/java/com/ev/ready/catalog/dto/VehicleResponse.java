@@ -5,6 +5,7 @@ import com.ev.ready.catalog.domain.ChargerType;
 import com.ev.ready.catalog.domain.Vehicle;
 import com.ev.ready.catalog.enums.VehicleType;
 import com.ev.ready.common.enums.VerificationStatus;
+import com.ev.ready.review.dto.VehicleRatingSummaryResponse;
 
 import java.math.BigDecimal;
 
@@ -22,10 +23,15 @@ public record VehicleResponse(
         String image,
         String description,
         Integer displayOrder,
-        VerificationStatus verificationStatus
+        VerificationStatus verificationStatus,
+        VehicleRatingSummaryResponse ratingSummary
 ) {
 
     public static VehicleResponse from(Vehicle vehicle) {
+        return from(vehicle, VehicleRatingSummaryResponse.empty());
+    }
+
+    public static VehicleResponse from(Vehicle vehicle, VehicleRatingSummaryResponse ratingSummary) {
         return new VehicleResponse(
                 vehicle.getId(),
                 vehicle.getVehicleType(),
@@ -40,7 +46,28 @@ public record VehicleResponse(
                 vehicle.getImage(),
                 vehicle.getDescription(),
                 vehicle.getDisplayOrder(),
-                vehicle.getVerificationStatus()
+                vehicle.getVerificationStatus(),
+                ratingSummary
+        );
+    }
+
+    public VehicleResponse withRatingSummary(VehicleRatingSummaryResponse ratingSummary) {
+        return new VehicleResponse(
+                id,
+                vehicleType,
+                brand,
+                chargerType,
+                model,
+                variant,
+                pricePkr,
+                rangeKm,
+                batteryCapacityKwh,
+                dcFastCharging,
+                image,
+                description,
+                displayOrder,
+                verificationStatus,
+                ratingSummary
         );
     }
 

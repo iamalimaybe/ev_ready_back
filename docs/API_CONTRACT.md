@@ -67,6 +67,55 @@ Returns a single active vehicle by ID, including brand and charger type display 
 
 Public vehicle detail responses include `verificationStatus` with the same frontend handling rules as vehicle list responses.
 
+### `GET /api/v1/vehicles/reviews/experience-types`
+
+Returns public vehicle review experience type options for frontend dropdowns as a plain JSON array. Values are derived from the backend `VehicleReviewExperienceType` enum.
+
+Each option includes:
+
+- `value`
+- `label`
+
+Current values:
+
+- `OWNER`
+- `FORMER_OWNER`
+- `TEST_DRIVE`
+- `BOOKED`
+- `CONSIDERING`
+- `RESEARCH_ONLY`
+- `OTHER`
+
+### `POST /api/v1/vehicles/{vehicleId}/reviews`
+
+Stores a public vehicle review submission with default `PENDING` moderation status. This endpoint does not publish the review, expose it publicly, update vehicle DTOs, calculate average ratings, or imply EVReady verified the user-submitted claim.
+
+Returns `404` when the vehicle does not exist or is not active.
+
+Request fields:
+
+- `rating`
+- `reviewText`
+- `displayName`
+- `city`
+- `experienceType`
+
+Validation:
+
+- `rating` is required and must be an integer from 1 to 5.
+- `reviewText` must be 2000 characters or fewer.
+- `displayName` must be 120 characters or fewer.
+- `city` must be 100 characters or fewer.
+- `experienceType` is required and must be a valid `VehicleReviewExperienceType`.
+
+Returns `201 Created` with:
+
+- `id`
+- `reviewStatus`
+- `message`
+
+`reviewStatus` is `PENDING` for public submissions. The response message must make clear that the review was submitted for moderation and is not published.
+
 ## Chargers
 
 ### `GET /api/v1/chargers`
@@ -332,11 +381,10 @@ This endpoint does not imply a customer callback, SLA, internal notes workflow, 
 
 ## Future Planned Reviews And Feedback APIs
 
-Reviews, ratings, charger feedback, rating aggregates, and review moderation APIs are not implemented yet. This section is planning-only and must not be treated as an active API contract.
+Public vehicle review submission and vehicle review experience type options are implemented above. Rating aggregates, public review retrieval, charger feedback, and review moderation APIs are not implemented yet. This section is planning-only and must not be treated as an active API contract except where an endpoint is documented elsewhere as implemented.
 
 Future public submit endpoints may include:
 
-- `POST /api/v1/vehicles/{id}/reviews`
 - `POST /api/v1/chargers/{id}/feedback`
 
 Public submit endpoints should create pending submissions only. They should not publish the submitted content, expose internal moderation data, or imply EVReady has verified user claims.

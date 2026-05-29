@@ -92,6 +92,31 @@ Field summary:
 
 Contact submissions are separate from Get Help leads and are not exposed publicly. Protected admin APIs can read submissions and update `contactStatus`.
 
+## VehicleReview
+
+Represents a public vehicle review submission stored for future moderation.
+
+Field summary:
+
+- `id`
+- `vehicleId`
+- `rating`
+- `reviewText`
+- `displayName`
+- `city`
+- `experienceType`
+- `reviewStatus`
+- `moderatedAt`
+- `moderatedBy`
+- `moderationReason`
+- audit fields
+
+`reviewStatus` is a Java enum with values: `PENDING`, `APPROVED`, `REJECTED`, and `SPAM`.
+
+`experienceType` is a Java enum with controlled reviewer-context values: `OWNER`, `FORMER_OWNER`, `TEST_DRIVE`, `BOOKED`, `CONSIDERING`, `RESEARCH_ONLY`, and `OTHER`.
+
+Public submissions default to `PENDING`. Vehicle reviews are not exposed publicly yet and do not affect vehicle list/detail DTOs or rating aggregates. Future public display must use approved records only.
+
 ## Data Conventions
 
 - All entity IDs should be `BIGINT` in PostgreSQL and `Long` in Java.
@@ -102,14 +127,14 @@ Contact submissions are separate from Get Help leads and are not exposed publicl
   - `updatedAt`
   - `updatedBy`
 - Every JPA entity should include equals and hashCode.
-- Ratings/reviews are deferred and should later be separate tables/entities.
+- Public review display, rating aggregates, admin moderation UI, and charger feedback are deferred.
 - Vehicle `sourceUrl`, `sourceLabel`, and `sourceCheckedAt` fields remain internal. Vehicle public response DTOs expose `verificationStatus` only for frontend source-confidence badges.
 - Charger `sourceUrl`, `sourceLabel`, and `sourceCheckedAt` fields remain internal. Charger public response DTOs expose `verificationStatus` only for frontend source-confidence badges.
 - Vehicle `batteryCapacityKwh` should preserve up to 3 decimal places.
 
 ## Future Planned Reviews And Feedback
 
-Vehicle reviews and charger feedback are not implemented yet. Future persistence should use separate entities, likely `VehicleReview` and `ChargerFeedback`, rather than storing user-submitted review data directly on `Vehicle` or `Charger`.
+Vehicle review submission persistence exists for pending moderation only. Charger feedback is not implemented yet. Future charger feedback persistence should use a separate entity, likely `ChargerFeedback`, rather than storing user-submitted feedback directly on `Charger`.
 
 Future review/feedback entities should follow the same ID and audit conventions: `BIGINT` / `Long` primary keys, `createdAt`, `createdBy`, `updatedAt`, and `updatedBy`. Moderation metadata such as status, moderator, timestamp, and reason should be included when the feature is implemented. Avoid entity relationships unless the implementation later needs them.
 

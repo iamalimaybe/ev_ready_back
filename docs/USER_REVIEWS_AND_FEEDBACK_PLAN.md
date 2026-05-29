@@ -1,6 +1,6 @@
 # User Reviews And Feedback Plan
 
-Planning document only. This does not implement reviews, ratings, charger feedback, moderation, authentication, schema changes, API endpoints, or frontend pages.
+Planning document with current implementation notes. Vehicle review submission persistence is implemented for default `PENDING` moderation only. This does not implement public review display, rating aggregates, charger feedback, moderation UI, authentication, or frontend review pages.
 
 Vehicle and charger public DTOs currently expose `verificationStatus` as source-confidence only. Future user-submitted content must preserve that distinction: reviews and feedback are community signals, not EVReady field verification.
 
@@ -14,9 +14,9 @@ Vehicle and charger public DTOs currently expose `verificationStatus` as source-
 
 ## Non-Goals
 
-- No implementation in this task.
+- No implementation beyond pending vehicle review submission persistence.
 - No public user auth yet.
-- No entities, repositories, services, controllers, migrations, or frontend code.
+- No public review display, rating aggregates, charger feedback, moderation UI, authentication, or frontend review pages.
 - No public display of pending, rejected, spam, or otherwise unmoderated content.
 - No fake or static reviews.
 - No modal-based detail/review display as the main user experience.
@@ -45,7 +45,7 @@ Future behavior:
 
 - Users may rate vehicles from 1 to 5 stars.
 - Users may optionally submit text reviews.
-- Submissions default to `PENDING`.
+- Submissions default to `PENDING`; backend persistence for this first step is implemented.
 - Reviews must not be displayed publicly until moderation rules and admin workflows exist.
 - Pending, rejected, and spam reviews must not affect public averages.
 - Public average ratings must use approved reviews only.
@@ -59,7 +59,7 @@ Basic fields likely needed later:
 - `reviewText`
 - `displayName`, optional
 - `city`, optional
-- `ownershipStatus` or `experienceType`, optional
+- `experienceType`, required controlled value such as `OWNER`, `FORMER_OWNER`, `TEST_DRIVE`, `BOOKED`, `CONSIDERING`, `RESEARCH_ONLY`, or `OTHER`
 - `reviewStatus`, such as `PENDING`, `APPROVED`, `REJECTED`, `SPAM`
 - `createdAt`
 - `createdBy`
@@ -194,7 +194,7 @@ Free-text fields should be treated as untrusted user input. Future public displa
 ## Suggested Phased Rollout
 
 - Phase 1: Planning only.
-- Phase 2: Backend persistence for vehicle reviews with default `PENDING` status.
+- Phase 2: Backend persistence for vehicle reviews with default `PENDING` status. Implemented for public submission only.
 - Phase 3: Admin moderation view for pending reviews.
 - Phase 4: Public approved-only aggregate ratings on listing cards.
 - Phase 5: Vehicle detail page with approved reviews.
@@ -205,11 +205,12 @@ Public user auth remains deferred unless abuse, ownership, edit/delete, or trust
 
 ## Future API Planning
 
-All endpoints in this section are future/planned only.
+Endpoints in this section are future/planned unless explicitly marked implemented.
 
-Public submit endpoints:
+Public helper and submit endpoints:
 
-- `POST /api/v1/vehicles/{id}/reviews`
+- `GET /api/v1/vehicles/reviews/experience-types` - implemented; returns controlled experience type options
+- `POST /api/v1/vehicles/{id}/reviews` - implemented; stores `PENDING` submissions only and does not publish reviews
 - `POST /api/v1/chargers/{id}/feedback`
 
 Public approved-only aggregate endpoints:
@@ -239,12 +240,12 @@ API rules:
 
 ## Future Data Model Planning
 
-Likely future entities:
+Current and likely future entities:
 
-- `VehicleReview`
+- `VehicleReview` - implemented for pending submission persistence only
 - `ChargerFeedback`
 
-Do not prescribe exact migrations yet. When implemented, follow the existing backend conventions:
+Do not prescribe exact future migrations here. When implemented, follow the existing backend conventions:
 
 - IDs should be `BIGINT` in PostgreSQL and `Long` in Java.
 - Include audit fields: `createdAt`, `createdBy`, `updatedAt`, `updatedBy`.
@@ -252,4 +253,3 @@ Do not prescribe exact migrations yet. When implemented, follow the existing bac
 - Avoid entity relationships unless implementation later requires them.
 - Keep moderation metadata on the submitted record unless a later implementation needs a separate audit/history model.
 - Keep internal contact fields out of public DTOs.
-

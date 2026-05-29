@@ -96,6 +96,9 @@
 - Document User Reviews And Charger Feedback Plan
   - Added planning-only notes for vehicle ratings/reviews, charger feedback, approved-only aggregates, dedicated detail pages, moderation, deferred public auth, future APIs, and future data model direction.
   - Changed files: `docs/USER_REVIEWS_AND_FEEDBACK_PLAN.md`, `README.md`, `docs/API_CONTRACT.md`, `docs/DATA_MODEL.md`, `docs/DECISIONS.md`, `docs/CODEX_TASKS.md`
+- Add Pending Vehicle Review Submission Persistence
+  - Added public vehicle review submission persistence with default `PENDING` status and controlled experience type values, without public review display, rating aggregates, admin moderation, charger feedback, or public auth.
+  - Changed files: `src/main/resources/db/changelog/V015__create_vehicle_review_table.sql`, `src/main/java/com/ev/ready/review/controller/VehicleReviewController.java`, `src/main/java/com/ev/ready/review/domain/VehicleReview.java`, `src/main/java/com/ev/ready/review/dto/CreateVehicleReviewRequest.java`, `src/main/java/com/ev/ready/review/dto/VehicleReviewExperienceTypeOptionResponse.java`, `src/main/java/com/ev/ready/review/dto/VehicleReviewSubmissionResponse.java`, `src/main/java/com/ev/ready/review/enums/VehicleReviewExperienceType.java`, `src/main/java/com/ev/ready/review/enums/VehicleReviewStatus.java`, `src/main/java/com/ev/ready/review/repository/VehicleReviewRepository.java`, `src/main/java/com/ev/ready/review/service/VehicleReviewService.java`, `src/main/java/com/ev/ready/catalog/service/VehicleReadService.java`, `src/main/java/com/ev/ready/config/SecurityConfig.java`, `docs/API_CONTRACT.md`, `docs/DATA_MODEL.md`, `docs/DECISIONS.md`, `docs/USER_REVIEWS_AND_FEEDBACK_PLAN.md`, `docs/CODEX_TASKS.md`
 
 ## Charger Seed Readiness Note
 

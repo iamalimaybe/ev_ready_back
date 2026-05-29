@@ -66,6 +66,7 @@ public class SecurityConfig {
                                 "/api/v1/charger-types",
                                 "/api/v1/vehicles",
                                 "/api/v1/vehicles/*",
+                                "/api/v1/vehicles/reviews/experience-types",
                                 "/api/v1/chargers",
                                 "/api/v1/chargers/*",
                                 "/api/v1/chargers/cities"
@@ -73,6 +74,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,
                                 "/api/v1/leads",
                                 "/api/v1/contact-submissions",
+                                "/api/v1/vehicles/*/reviews",
                                 "/api/v1/admin/auth/login"
                         ).permitAll()
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")

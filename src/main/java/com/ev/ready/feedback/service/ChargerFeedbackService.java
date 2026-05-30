@@ -10,6 +10,7 @@ import com.ev.ready.feedback.dto.ChargerFeedbackStatusOptionResponse;
 import com.ev.ready.feedback.dto.ChargerFeedbackSubmissionResponse;
 import com.ev.ready.feedback.dto.ChargerFeedbackTypeOptionResponse;
 import com.ev.ready.feedback.dto.CreateChargerFeedbackRequest;
+import com.ev.ready.feedback.dto.PublicChargerFeedbackResponse;
 import com.ev.ready.feedback.dto.UpdateChargerFeedbackStatusRequest;
 import com.ev.ready.feedback.enums.ChargerFeedbackStatus;
 import com.ev.ready.feedback.enums.ChargerFeedbackType;
@@ -32,6 +33,8 @@ public class ChargerFeedbackService {
 
     private static final int DEFAULT_PAGE_SIZE = 20;
     private static final int MAX_PAGE_SIZE = 100;
+    private static final int DEFAULT_PUBLIC_FEEDBACK_PAGE_SIZE = 10;
+    private static final int MAX_PUBLIC_FEEDBACK_PAGE_SIZE = 50;
     private static final String PUBLIC_AUDIT_USER = "public";
 
     private final ChargerFeedbackRepository chargerFeedbackRepository;
@@ -80,6 +83,21 @@ public class ChargerFeedbackService {
                         label(feedbackType)
                 ))
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<PublicChargerFeedbackResponse> getApprovedChargerFeedback(
+            Long chargerId,
+            Integer page,
+            Integer size
+    ) {
+        chargerReadService.ensurePublicChargerExists(chargerId);
+
+        return PageResponse.from(chargerFeedbackRepository.findByChargerIdAndFeedbackStatus(
+                chargerId,
+                ChargerFeedbackStatus.APPROVED,
+                publicFeedbackPageRequest(page, size)
+        ).map(PublicChargerFeedbackResponse::from));
     }
 
     @Transactional(readOnly = true)
@@ -163,6 +181,17 @@ public class ChargerFeedbackService {
     private PageRequest pageRequest(Integer page, Integer size) {
         int safePage = page == null || page < 0 ? 0 : page;
         int safeSize = size == null || size < 1 ? DEFAULT_PAGE_SIZE : Math.min(size, MAX_PAGE_SIZE);
+        return PageRequest.of(safePage, safeSize, Sort.by(
+                Sort.Order.desc("createdAt"),
+                Sort.Order.desc("id")
+        ));
+    }
+
+    private PageRequest publicFeedbackPageRequest(Integer page, Integer size) {
+        int safePage = page == null || page < 0 ? 0 : page;
+        int safeSize = size == null || size < 1
+                ? DEFAULT_PUBLIC_FEEDBACK_PAGE_SIZE
+                : Math.min(size, MAX_PUBLIC_FEEDBACK_PAGE_SIZE);
         return PageRequest.of(safePage, safeSize, Sort.by(
                 Sort.Order.desc("createdAt"),
                 Sort.Order.desc("id")

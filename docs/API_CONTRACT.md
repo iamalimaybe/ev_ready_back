@@ -213,6 +213,37 @@ Current values:
 
 This endpoint exposes feedback type choices only. It does not expose moderation status options, public feedback content, or live charger availability.
 
+### `GET /api/v1/chargers/{chargerId}/feedback`
+
+Returns approved charger feedback for a public charger detail page. Returns `404` when the charger does not exist or is not active.
+
+Only feedback with `feedbackStatus = APPROVED` is returned. Pending, rejected, spam, applied, and other non-public feedback records are never returned by this endpoint. This endpoint does not imply EVReady verified user-submitted claims or live charger availability.
+
+Query parameters:
+
+- `page`, optional, default `0`
+- `size`, optional, default `10`, capped at `50`
+
+Returns a stable page response:
+
+- `content`
+- `page`
+- `size`
+- `totalElements`
+- `totalPages`
+
+Public approved charger feedback records include only safe public fields:
+
+- `id`
+- `rating`
+- `feedbackType`
+- `message`
+- `displayName`
+- `city`
+- `createdAt`
+
+Public approved charger feedback records do not include `reportedByContact`, `feedbackStatus`, moderation metadata, audit user fields, or internal/admin fields.
+
 ### `POST /api/v1/chargers/{chargerId}/feedback`
 
 Stores a public charger feedback submission with default `PENDING` moderation status. This endpoint does not publish feedback, expose approved feedback publicly, calculate public charger rating aggregates, update charger status, or imply live charger availability.
@@ -630,7 +661,7 @@ When feedback moves out of `PENDING`, the backend sets `reviewedAt` and `reviewe
 
 ## Future Planned Reviews And Feedback APIs
 
-Public vehicle review submission, vehicle review experience type options, protected admin vehicle review moderation APIs, approved-only vehicle rating summaries, approved-only public vehicle review retrieval, pending-only public charger feedback submission, and protected admin charger feedback moderation APIs are implemented above. This section is planning-only and must not be treated as an active API contract except where an endpoint is documented elsewhere as implemented.
+Public vehicle review submission, vehicle review experience type options, protected admin vehicle review moderation APIs, approved-only vehicle rating summaries, approved-only public vehicle review retrieval, pending-only public charger feedback submission, public approved-only charger feedback retrieval, and protected admin charger feedback moderation APIs are implemented above. This section is planning-only and must not be treated as an active API contract except where an endpoint is documented elsewhere as implemented.
 
 Implemented public submit endpoints include:
 
@@ -644,9 +675,9 @@ Future public approved-only aggregate endpoints may support listing cards:
 
 Listing-card aggregates should include only average rating, stars out of 5, and rating count. Average ratings must use approved reviews only and should display with max 1 decimal place. Pending, rejected, spam, and unmoderated records must not affect public averages.
 
-Future public approved-only review/comment endpoints may support dedicated detail pages:
+Implemented public approved-only review/comment endpoints include:
 
-- `GET /api/v1/chargers/{id}/feedback`
+- `GET /api/v1/chargers/{id}/feedback` - approved feedback only
 
 These endpoints must not return unmoderated content or internal-only contact fields. Detail-page comments must not imply EVReady verifies every user-submitted claim. Charger feedback/comments must not imply live charger availability.
 

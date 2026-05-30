@@ -1,6 +1,6 @@
 # Backend Admin MVP Plan
 
-This document plans the backend Admin MVP for EVReady Pakistan. The minimal admin authentication foundation, protected lead/contact retrieval APIs, and simple lead/contact status updates now exist, but internal notes, broader admin workflows, catalog management, and frontend UI work remain deferred.
+This document plans the backend Admin MVP for EVReady Pakistan. The minimal admin authentication foundation, protected lead/contact retrieval APIs, simple lead/contact status updates, protected vehicle review moderation APIs, and protected charger feedback moderation APIs now exist, but internal notes, broader admin workflows, catalog management, and frontend UI work remain deferred.
 
 ## Goal
 
@@ -8,6 +8,8 @@ The Admin MVP should give trusted EVReady operators a protected way to review an
 
 - Get Help lead submissions.
 - Contact Us submissions.
+- Vehicle review submissions.
+- Charger feedback submissions.
 - Later, basic vehicle catalog visibility/order/content.
 - Later, basic charger directory visibility/order/content.
 
@@ -19,7 +21,7 @@ Do not build these first:
 
 - Public admin routes.
 - Open retrieval APIs for leads or contact submissions.
-- Ratings/reviews.
+- Public ratings/reviews display beyond already implemented approved-only vehicle review APIs.
 - Payments.
 - Booking.
 - SLA or callback guarantee workflows.
@@ -43,6 +45,8 @@ Implemented first admin scope:
 - View Contact Us submissions.
 - Update Get Help lead status.
 - Update Contact Us submission status.
+- Review and moderate vehicle review submissions.
+- Review and moderate charger feedback submissions.
 
 Still deferred from current scope:
 
@@ -133,6 +137,10 @@ Implemented protected admin API groups:
   - List, view detail, status options, and status update.
 - `/api/v1/admin/contact-submissions`
   - List, view detail, status options, and status update.
+- `/api/v1/admin/vehicle-reviews`
+  - List, view detail, status options, and moderation status update.
+- `/api/v1/admin/charger-feedback`
+  - List, view detail, status options, and moderation status update.
 
 Future protected admin API groups and actions, not implemented yet:
 

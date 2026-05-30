@@ -555,9 +555,82 @@ Allowed `reviewStatus` values:
 
 Updating a review status does not publish reviews publicly, calculate rating aggregates, add stars to vehicle cards, or imply EVReady verified the user-submitted claim.
 
+## Protected Admin Charger Feedback APIs
+
+These endpoints require an active admin session. They expose submitted charger feedback and internal contact data to trusted admins only and must not be public.
+
+### `GET /api/v1/admin/charger-feedback`
+
+Returns charger feedback submissions newest-first, paginated with the same stable page response shape as admin lead/contact/review reads.
+
+Query parameters:
+
+- `page`, optional, default `0`
+- `size`, optional, default `20`, capped at `100`
+- `feedbackStatus`, optional
+- `chargerId`, optional
+
+Filtering is applied by repository query, not in memory. When `feedbackStatus` is provided, it must match a `ChargerFeedbackStatus` enum value.
+
+Admin charger feedback records include:
+
+- `id`
+- `chargerId`
+- `chargerName`
+- `rating`
+- `feedbackType`
+- `message`
+- `displayName`
+- `city`
+- `reportedByContact`
+- `feedbackStatus`
+- `reviewedAt`
+- `reviewedBy`
+- `createdAt`
+- `createdBy`
+- `updatedAt`
+- `updatedBy`
+
+### `GET /api/v1/admin/charger-feedback/statuses`
+
+Returns charger feedback moderation status options for admin UI controls as a plain JSON array. Values are derived from the backend `ChargerFeedbackStatus` enum.
+
+Each option includes:
+
+- `value`
+- `label`
+
+### `GET /api/v1/admin/charger-feedback/{id}`
+
+Returns one charger feedback submission for admins. Returns `404` when the feedback record does not exist.
+
+### `PATCH /api/v1/admin/charger-feedback/{id}/status`
+
+Updates moderation status and audit metadata for one charger feedback submission. Returns the updated admin charger feedback record. Returns `404` when the feedback record does not exist.
+
+This protected admin endpoint is called by browser clients with session credentials, so backend CORS allowed methods must include `PATCH`.
+
+Request fields:
+
+- `feedbackStatus`
+
+Validation:
+
+- `feedbackStatus` is required and must be a valid `ChargerFeedbackStatus`.
+
+Allowed `feedbackStatus` values:
+
+- `PENDING`
+- `APPROVED`
+- `REJECTED`
+- `SPAM`
+- `APPLIED`
+
+When feedback moves out of `PENDING`, the backend sets `reviewedAt` and `reviewedBy` from the authenticated admin principal. Updating feedback status does not update charger public status, publish feedback publicly, calculate charger rating aggregates, or imply live charger availability.
+
 ## Future Planned Reviews And Feedback APIs
 
-Public vehicle review submission, vehicle review experience type options, protected admin vehicle review moderation APIs, approved-only vehicle rating summaries, approved-only public vehicle review retrieval, and pending-only public charger feedback submission are implemented above. This section is planning-only and must not be treated as an active API contract except where an endpoint is documented elsewhere as implemented.
+Public vehicle review submission, vehicle review experience type options, protected admin vehicle review moderation APIs, approved-only vehicle rating summaries, approved-only public vehicle review retrieval, pending-only public charger feedback submission, and protected admin charger feedback moderation APIs are implemented above. This section is planning-only and must not be treated as an active API contract except where an endpoint is documented elsewhere as implemented.
 
 Implemented public submit endpoints include:
 
@@ -577,10 +650,12 @@ Future public approved-only review/comment endpoints may support dedicated detai
 
 These endpoints must not return unmoderated content or internal-only contact fields. Detail-page comments must not imply EVReady verifies every user-submitted claim. Charger feedback/comments must not imply live charger availability.
 
-Future protected admin moderation endpoints may include:
+Implemented protected admin moderation endpoints include:
 
-- `GET /api/v1/admin/charger-feedback`
-- `PATCH /api/v1/admin/charger-feedback/{id}/status`
+- `GET /api/v1/admin/charger-feedback` - protected admin paginated list
+- `GET /api/v1/admin/charger-feedback/statuses` - protected admin status options
+- `GET /api/v1/admin/charger-feedback/{id}` - protected admin detail
+- `PATCH /api/v1/admin/charger-feedback/{id}/status` - protected admin moderation update
 
 Protected moderation endpoints must require an active admin session. Browser-called admin moderation methods must also be reflected in Spring Security CORS allowed methods when implemented.
 

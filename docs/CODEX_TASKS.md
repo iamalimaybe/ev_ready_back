@@ -114,6 +114,9 @@
 - Add Protected Admin Charger Feedback Moderation APIs
   - Added protected admin charger feedback list, detail, status options, and moderation status update APIs without public feedback retrieval, charger rating aggregates, charger status updates, frontend code, or live availability implications.
   - Changed files: `src/main/java/com/ev/ready/admin/feedback/controller/AdminChargerFeedbackController.java`, `src/main/java/com/ev/ready/feedback/dto/AdminChargerFeedbackResponse.java`, `src/main/java/com/ev/ready/feedback/dto/ChargerFeedbackStatusOptionResponse.java`, `src/main/java/com/ev/ready/feedback/dto/UpdateChargerFeedbackStatusRequest.java`, `src/main/java/com/ev/ready/feedback/repository/ChargerFeedbackRepository.java`, `src/main/java/com/ev/ready/feedback/service/ChargerFeedbackService.java`, `docs/API_CONTRACT.md`, `docs/DATA_MODEL.md`, `docs/USER_REVIEWS_AND_FEEDBACK_PLAN.md`, `docs/ADMIN_MVP_PLAN.md`, `docs/CODEX_TASKS.md`
+- Add Public Approved Charger Feedback Retrieval
+  - Added approved-only public charger feedback retrieval for active charger detail pages, without exposing pending/rejected/spam/applied feedback, contact fields, moderation metadata, rating aggregates, charger status updates, frontend code, or live availability implications.
+  - Changed files: `src/main/java/com/ev/ready/config/SecurityConfig.java`, `src/main/java/com/ev/ready/feedback/controller/ChargerFeedbackController.java`, `src/main/java/com/ev/ready/feedback/dto/PublicChargerFeedbackResponse.java`, `src/main/java/com/ev/ready/feedback/repository/ChargerFeedbackRepository.java`, `src/main/java/com/ev/ready/feedback/service/ChargerFeedbackService.java`, `docs/API_CONTRACT.md`, `docs/DATA_MODEL.md`, `docs/USER_REVIEWS_AND_FEEDBACK_PLAN.md`, `docs/CODEX_TASKS.md`
 
 ## Charger Seed Readiness Note
 

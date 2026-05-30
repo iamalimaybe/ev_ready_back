@@ -70,7 +70,8 @@ public class SecurityConfig {
                                 "/api/v1/chargers",
                                 "/api/v1/chargers/*",
                                 "/api/v1/chargers/cities",
-                                "/api/v1/chargers/feedback-types"
+                                "/api/v1/chargers/feedback-types",
+                                "/api/v1/chargers/*/feedback"
                         ).permitAll()
                         .requestMatchers(HttpMethod.POST,
                                 "/api/v1/leads",

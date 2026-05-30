@@ -6,11 +6,13 @@ import com.ev.ready.catalog.domain.Vehicle;
 import com.ev.ready.catalog.dto.VehicleResponse;
 import com.ev.ready.catalog.enums.VehicleType;
 import com.ev.ready.catalog.repository.VehicleRepository;
+import com.ev.ready.common.PageResponse;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,9 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
 public class VehicleReadService {
+
+    private static final int DEFAULT_PUBLIC_PAGE_SIZE = 6;
+    private static final int MAX_PUBLIC_PAGE_SIZE = 50;
 
     private final VehicleRepository vehicleRepository;
 
@@ -48,6 +53,30 @@ public class VehicleReadService {
                 .toList();
     }
 
+    public PageResponse<VehicleResponse> getVehicles(
+            String type,
+            Long brandId,
+            Long chargerTypeId,
+            Long priceMax,
+            Integer rangeMin,
+            Boolean dcFastCharging,
+            String sort,
+            Integer page,
+            Integer size
+    ) {
+        VehicleType vehicleType = parseVehicleType(type);
+        PageRequest pageRequest = PageRequest.of(
+                normalizedPage(page),
+                normalizedSize(size),
+                vehicleSort(sort)
+        );
+
+        return PageResponse.from(vehicleRepository.findAll(
+                vehicleSpecification(vehicleType, brandId, chargerTypeId, priceMax, rangeMin, dcFastCharging),
+                pageRequest
+        ).map(VehicleResponse::from));
+    }
+
     public VehicleResponse getVehicle(Long id) {
         Vehicle vehicle = vehicleRepository.findPublicById(id)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Vehicle not found"));
@@ -69,8 +98,10 @@ public class VehicleReadService {
             Boolean dcFastCharging
     ) {
         return (root, query, criteriaBuilder) -> {
-            root.fetch("brand", JoinType.INNER);
-            root.fetch("chargerType", JoinType.LEFT);
+            if (query.getResultType() != Long.class && query.getResultType() != long.class) {
+                root.fetch("brand", JoinType.INNER);
+                root.fetch("chargerType", JoinType.LEFT);
+            }
             query.distinct(true);
 
             Join<Vehicle, Brand> brand = root.join("brand", JoinType.INNER);
@@ -133,5 +164,19 @@ public class VehicleReadService {
 
     private Sort defaultVehicleSort() {
         return Sort.by(Sort.Order.asc("displayOrder"), Sort.Order.asc("id"));
+    }
+
+    private int normalizedPage(Integer page) {
+        if (page == null) {
+            return 0;
+        }
+        return Math.max(page, 0);
+    }
+
+    private int normalizedSize(Integer size) {
+        if (size == null) {
+            return DEFAULT_PUBLIC_PAGE_SIZE;
+        }
+        return Math.min(Math.max(size, 1), MAX_PUBLIC_PAGE_SIZE);
     }
 }

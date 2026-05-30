@@ -2,6 +2,7 @@ package com.ev.ready.catalog.controller;
 
 import com.ev.ready.catalog.dto.VehicleResponse;
 import com.ev.ready.catalog.service.VehicleReadService;
+import com.ev.ready.common.PageResponse;
 import com.ev.ready.review.dto.VehicleRatingSummaryResponse;
 import com.ev.ready.review.service.VehicleReviewService;
 import java.util.List;
@@ -28,15 +29,32 @@ public class VehicleController {
     }
 
     @GetMapping
-    public List<VehicleResponse> getVehicles(
+    public Object getVehicles(
             @RequestParam(required = false) String type,
             @RequestParam(required = false) Long brandId,
             @RequestParam(required = false) Long chargerTypeId,
             @RequestParam(required = false) Long priceMax,
             @RequestParam(required = false) Integer rangeMin,
             @RequestParam(required = false) Boolean dcFastCharging,
-            @RequestParam(required = false) String sort
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size
     ) {
+        if (page != null || size != null) {
+            PageResponse<VehicleResponse> vehicles = vehicleReadService.getVehicles(
+                    type,
+                    brandId,
+                    chargerTypeId,
+                    priceMax,
+                    rangeMin,
+                    dcFastCharging,
+                    sort,
+                    page,
+                    size
+            );
+            return withRatingSummaries(vehicles);
+        }
+
         List<VehicleResponse> vehicles = vehicleReadService.getVehicles(
                 type,
                 brandId,
@@ -46,6 +64,20 @@ public class VehicleController {
                 dcFastCharging,
                 sort
         );
+        return withRatingSummaries(vehicles);
+    }
+
+    private PageResponse<VehicleResponse> withRatingSummaries(PageResponse<VehicleResponse> vehicles) {
+        return new PageResponse<>(
+                withRatingSummaries(vehicles.content()),
+                vehicles.page(),
+                vehicles.size(),
+                vehicles.totalElements(),
+                vehicles.totalPages()
+        );
+    }
+
+    private List<VehicleResponse> withRatingSummaries(List<VehicleResponse> vehicles) {
         Map<Long, VehicleRatingSummaryResponse> ratingSummaries =
                 vehicleReviewService.getApprovedRatingSummaries(vehicles.stream()
                         .map(VehicleResponse::id)

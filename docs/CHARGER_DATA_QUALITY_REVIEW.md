@@ -106,7 +106,7 @@ Before adding additional charger rows, verify at minimum:
 
 ## Admin Correction APIs
 
-Protected admin charger correction APIs now allow trusted admins to list, view, and update existing charger directory records without direct database access. These APIs are for directory data correction only; they do not create chargers, delete chargers, import/export CSV, apply user feedback automatically, or imply live charger availability.
+Protected admin charger management APIs now allow trusted admins to list, view, create, and update charger directory records without direct database access. These APIs are for directory data management only; they do not delete chargers, import/export CSV, apply user feedback automatically, or imply live charger availability.
 
 The admin correction APIs make these fields editable:
 

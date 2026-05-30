@@ -140,7 +140,7 @@ Implemented protected admin API groups:
 - `/api/v1/admin/charger-feedback`
   - List, view detail, status options, and moderation status update.
 - `/api/v1/admin/chargers`
-  - List, view detail, and update editable charger directory correction fields.
+  - List, view detail, create, update editable charger directory fields, and return form options.
 
 Future protected admin API groups and actions, not implemented yet:
 

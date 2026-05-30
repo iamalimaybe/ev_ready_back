@@ -2,9 +2,13 @@ package com.ev.ready.charger.service;
 
 import com.ev.ready.catalog.service.ChargerTypeReadService;
 import com.ev.ready.charger.domain.Charger;
+import com.ev.ready.charger.dto.AdminChargerFormOptionsResponse;
 import com.ev.ready.charger.dto.AdminChargerResponse;
+import com.ev.ready.charger.dto.CreateChargerRequest;
+import com.ev.ready.charger.dto.OptionResponse;
 import com.ev.ready.charger.dto.UpdateChargerRequest;
 import com.ev.ready.charger.enums.ChargerStatus;
+import com.ev.ready.charger.enums.ChargingType;
 import com.ev.ready.charger.repository.ChargerRepository;
 import com.ev.ready.common.PageResponse;
 import com.ev.ready.common.enums.VerificationStatus;
@@ -12,7 +16,9 @@ import com.ev.ready.common.util.StringUtil;
 import jakarta.persistence.criteria.Predicate;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -61,6 +67,47 @@ public class ChargerAdminService {
                         HttpStatus.NOT_FOUND,
                         "Charger not found."
                 ));
+    }
+
+    public AdminChargerFormOptionsResponse getAdminChargerFormOptions() {
+        return new AdminChargerFormOptionsResponse(
+                chargerTypeReadService.getChargerTypes(),
+                enumOptions(ChargingType.values()),
+                enumOptions(ChargerStatus.values()),
+                enumOptions(VerificationStatus.values())
+        );
+    }
+
+    @Transactional
+    public AdminChargerResponse createAdminCharger(
+            CreateChargerRequest request,
+            String createdBy
+    ) {
+        Charger charger = new Charger();
+        charger.setCreatedAt(OffsetDateTime.now());
+        charger.setCreatedBy(StringUtil.trimToNull(createdBy));
+        charger.setActive(request.active() == null || request.active());
+
+        charger.setChargerType(chargerTypeReadService.getActiveChargerType(request.chargerTypeId()));
+        charger.setName(requiredText(request.name(), "Name is required."));
+        charger.setCity(requiredText(request.city(), "City is required."));
+        charger.setArea(StringUtil.trimToNull(request.area()));
+        charger.setAddress(StringUtil.trimToNull(request.address()));
+        charger.setLatitude(request.latitude());
+        charger.setLongitude(request.longitude());
+        charger.setChargingType(request.chargingType());
+        charger.setStatus(request.status());
+        charger.setPowerKw(request.powerKw());
+        charger.setPriceNote(StringUtil.trimToNull(request.priceNote()));
+        charger.setDescription(requiredText(request.description(), "Description is required."));
+        charger.setImage(StringUtil.trimToNull(request.image()));
+        charger.setSourceUrl(StringUtil.trimToNull(request.sourceUrl()));
+        charger.setSourceLabel(StringUtil.trimToNull(request.sourceLabel()));
+        charger.setSourceCheckedAt(request.sourceCheckedAt());
+        charger.setVerificationStatus(request.verificationStatus());
+        charger.setDisplayOrder(request.displayOrder());
+
+        return AdminChargerResponse.from(chargerRepository.save(charger));
     }
 
     @Transactional
@@ -143,5 +190,19 @@ public class ChargerAdminService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
         }
         return trimmedValue;
+    }
+
+    private <E extends Enum<E>> List<OptionResponse> enumOptions(E[] values) {
+        return Arrays.stream(values)
+                .map(value -> new OptionResponse(value.name(), label(value.name())))
+                .toList();
+    }
+
+    private String label(String value) {
+        String[] words = value.toLowerCase(Locale.ROOT).split("_");
+        for (int i = 0; i < words.length; i++) {
+            words[i] = words[i].substring(0, 1).toUpperCase(Locale.ROOT) + words[i].substring(1);
+        }
+        return String.join(" ", words);
     }
 }

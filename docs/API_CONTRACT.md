@@ -636,6 +636,54 @@ Admin charger records include:
 
 Returns one charger record for admin editing. Returns `404` when the charger record does not exist.
 
+### `GET /api/v1/admin/chargers/form-options`
+
+Returns admin charger form options as a plain JSON object so admin clients do not hardcode charger type or enum choices.
+
+Response fields:
+
+- `chargerTypes`
+- `chargingTypes`
+- `chargerStatuses`
+- `verificationStatuses`
+
+`chargerTypes` includes active charger type records only. Enum option arrays include:
+
+- `value`
+- `label`
+
+### `POST /api/v1/admin/chargers`
+
+Creates one charger directory record. Returns `201 Created` with the created admin charger record.
+
+This protected admin endpoint is called by browser clients with session credentials, so backend CORS allowed methods must include `POST`.
+
+Request fields:
+
+- `chargerTypeId`
+- `name`
+- `city`
+- `area`
+- `address`
+- `latitude`
+- `longitude`
+- `chargingType`
+- `status`
+- `powerKw`
+- `priceNote`
+- `description`
+- `image`
+- `sourceUrl`
+- `sourceLabel`
+- `sourceCheckedAt`
+- `verificationStatus`
+- `active`
+- `displayOrder`
+
+Validation is the same as `PATCH /api/v1/admin/chargers/{id}`, except `active` may be omitted and defaults to `true` when the rest of the request is valid.
+
+Creating a charger record does not imply the charger is currently working, available, unoccupied, compatible, or priced as shown. `status` is reported/non-live status. `verificationStatus` is source confidence only, not EVReady field verification.
+
 ### `PATCH /api/v1/admin/chargers/{id}`
 
 Updates editable charger directory fields for one existing charger record. Returns the updated admin charger record. Returns `404` when the charger record does not exist.

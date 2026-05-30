@@ -40,6 +40,21 @@ Returns active charger types ordered by `displayOrder` ascending, then `name` as
 
 Returns a list of vehicles for the catalog.
 
+When neither `page` nor `size` is provided, this endpoint preserves the legacy response and returns a plain JSON array.
+
+When `page` or `size` is provided, this endpoint returns a stable page response:
+
+- `content`
+- `page`
+- `size`
+- `totalElements`
+- `totalPages`
+
+Pagination parameters:
+
+- `page`, optional, default `0` when pagination is requested
+- `size`, optional, default `6` when pagination is requested, capped at `50`
+
 Public vehicle list responses include `verificationStatus`. Frontend clients use this value for source-confidence badges. `OFFICIAL` means the vehicle data came from an official OEM, operator, or distributor-type source; the UI must not describe it as "Verified" or imply EVReady personally audited vehicle specs or prices.
 
 Public vehicle list responses include `ratingSummary` based only on approved vehicle reviews:
@@ -51,7 +66,7 @@ Public vehicle list responses include `ratingSummary` based only on approved veh
 
 `sourceUrl` and `sourceLabel` remain internal and are not exposed in public vehicle responses. Missing or `null` `verificationStatus` values should be treated by frontend clients as `UNVERIFIED`.
 
-Planned filters:
+Supported filters:
 
 - `type`
 - `brandId`
@@ -59,8 +74,10 @@ Planned filters:
 - `priceMax`
 - `rangeMin`
 - `dcFastCharging`
+- `page`
+- `size`
 
-Planned sort values:
+Supported sort values:
 
 - default: `displayOrder` ascending, then `id` ascending
 - `priceAsc`
@@ -160,18 +177,35 @@ Public approved review records do not include moderation metadata, `reviewStatus
 
 Returns a list of active chargers for the directory. Chargers whose charger type is inactive are not returned.
 
+When neither `page` nor `size` is provided, this endpoint preserves the legacy response and returns a plain JSON array.
+
+When `page` or `size` is provided, this endpoint returns a stable page response:
+
+- `content`
+- `page`
+- `size`
+- `totalElements`
+- `totalPages`
+
+Pagination parameters:
+
+- `page`, optional, default `0` when pagination is requested
+- `size`, optional, default `6` when pagination is requested, capped at `50`
+
 Public charger list responses include `verificationStatus`. Frontend clients use this value for source-confidence badges. `OFFICIAL` means the charger data came from an official operator, network, distributor, or similar source; the UI must not imply live charger availability, verified price, guaranteed operational status, or EVReady field verification.
 
 `sourceUrl`, `sourceLabel`, and `sourceCheckedAt` remain internal and are not exposed in public charger responses. Missing or `null` `verificationStatus` values should be treated by frontend clients as `UNVERIFIED`.
 
-Planned filters:
+Supported filters:
 
 - `city`
 - `chargerTypeId`
 - `chargingType`
 - `status`
+- `page`
+- `size`
 
-Planned sort values:
+Supported sort values:
 
 - default: `displayOrder` ascending, then `id` ascending
 - `nameAsc`
@@ -190,6 +224,102 @@ Public charger detail responses include `verificationStatus` with the same front
 Returns a plain JSON array of distinct city names from active charger directory records, sorted ascending.
 
 If no active charger records exist, returns `[]`.
+
+### `GET /api/v1/chargers/feedback-types`
+
+Returns public charger feedback type options for frontend controls as a plain JSON array. Values are derived from the backend `ChargerFeedbackType` enum.
+
+Each option includes:
+
+- `value`
+- `label`
+
+Current values:
+
+- `WORKING`
+- `NOT_WORKING`
+- `CONNECTOR_UNAVAILABLE`
+- `PRICE_CHANGED`
+- `ACCESS_ISSUE`
+- `LOCATION_WRONG`
+- `CLOSED_OR_REMOVED`
+- `OTHER`
+
+This endpoint exposes feedback type choices only. It does not expose moderation status options, public feedback content, or live charger availability.
+
+### `GET /api/v1/chargers/{chargerId}/feedback`
+
+Returns approved charger feedback for a public charger detail page. Returns `404` when the charger does not exist or is not active.
+
+Only feedback with `feedbackStatus = APPROVED` is returned. Pending, rejected, spam, applied, and other non-public feedback records are never returned by this endpoint. This endpoint does not imply EVReady verified user-submitted claims or live charger availability.
+
+Query parameters:
+
+- `page`, optional, default `0`
+- `size`, optional, default `10`, capped at `50`
+
+Returns a stable page response:
+
+- `content`
+- `page`
+- `size`
+- `totalElements`
+- `totalPages`
+
+Public approved charger feedback records include only safe public fields:
+
+- `id`
+- `rating`
+- `feedbackType`
+- `message`
+- `displayName`
+- `city`
+- `createdAt`
+
+Public approved charger feedback records do not include `reportedByContact`, `feedbackStatus`, moderation metadata, audit user fields, or internal/admin fields.
+
+### `POST /api/v1/chargers/{chargerId}/feedback`
+
+Stores a public charger feedback submission with default `PENDING` moderation status. This endpoint does not publish feedback, expose approved feedback publicly, calculate public charger rating aggregates, update charger status, or imply live charger availability.
+
+Returns `404` when the charger does not exist or is not active.
+
+Request fields:
+
+- `rating`
+- `feedbackType`
+- `message`
+- `displayName`
+- `city`
+- `reportedByContact`
+
+Validation:
+
+- `rating` is optional, but when provided must be an integer from 1 to 5.
+- `feedbackType` is required and must be a valid `ChargerFeedbackType`.
+- `message` must be 2000 characters or fewer.
+- `displayName` must be 120 characters or fewer.
+- `city` must be 100 characters or fewer.
+- `reportedByContact` must be 160 characters or fewer and is internal-only.
+
+Allowed `feedbackType` values:
+
+- `WORKING`
+- `NOT_WORKING`
+- `CONNECTOR_UNAVAILABLE`
+- `PRICE_CHANGED`
+- `ACCESS_ISSUE`
+- `LOCATION_WRONG`
+- `CLOSED_OR_REMOVED`
+- `OTHER`
+
+Returns `201 Created` with:
+
+- `id`
+- `feedbackStatus`
+- `message`
+
+`feedbackStatus` is `PENDING` for public submissions. The response message must make clear that feedback was submitted for moderation and is not published.
 
 ## Leads
 
@@ -490,13 +620,234 @@ Allowed `reviewStatus` values:
 
 Updating a review status does not publish reviews publicly, calculate rating aggregates, add stars to vehicle cards, or imply EVReady verified the user-submitted claim.
 
+## Protected Admin Charger Directory APIs
+
+These endpoints require an active admin session. They expose charger correction fields to trusted admins only and must not be public.
+
+### `GET /api/v1/admin/chargers`
+
+Returns charger directory records, including active and inactive records, paginated with the same stable page response shape as other admin reads.
+
+Query parameters:
+
+- `page`, optional, default `0`
+- `size`, optional, default `20`, capped at `100`
+- `active`, optional
+- `city`, optional
+- `status`, optional
+- `verificationStatus`, optional
+
+Results are ordered by `displayOrder` ascending, then `id` ascending.
+
+Admin charger records include:
+
+- `id`
+- `chargerType`
+- `name`
+- `city`
+- `area`
+- `address`
+- `latitude`
+- `longitude`
+- `chargingType`
+- `status`
+- `powerKw`
+- `priceNote`
+- `description`
+- `image`
+- `sourceUrl`
+- `sourceLabel`
+- `sourceCheckedAt`
+- `verificationStatus`
+- `active`
+- `displayOrder`
+- `createdAt`
+- `createdBy`
+- `updatedAt`
+- `updatedBy`
+
+### `GET /api/v1/admin/chargers/{id}`
+
+Returns one charger record for admin editing. Returns `404` when the charger record does not exist.
+
+### `GET /api/v1/admin/chargers/form-options`
+
+Returns admin charger form options as a plain JSON object so admin clients do not hardcode charger type or enum choices.
+
+Response fields:
+
+- `chargerTypes`
+- `chargingTypes`
+- `chargerStatuses`
+- `verificationStatuses`
+
+`chargerTypes` includes active charger type records only. Enum option arrays include:
+
+- `value`
+- `label`
+
+### `POST /api/v1/admin/chargers`
+
+Creates one charger directory record. Returns `201 Created` with the created admin charger record.
+
+This protected admin endpoint is called by browser clients with session credentials, so backend CORS allowed methods must include `POST`.
+
+Request fields:
+
+- `chargerTypeId`
+- `name`
+- `city`
+- `area`
+- `address`
+- `latitude`
+- `longitude`
+- `chargingType`
+- `status`
+- `powerKw`
+- `priceNote`
+- `description`
+- `image`
+- `sourceUrl`
+- `sourceLabel`
+- `sourceCheckedAt`
+- `verificationStatus`
+- `active`
+- `displayOrder`
+
+Validation is the same as `PATCH /api/v1/admin/chargers/{id}`, except `active` may be omitted and defaults to `true` when the rest of the request is valid.
+
+Creating a charger record does not imply the charger is currently working, available, unoccupied, compatible, or priced as shown. `status` is reported/non-live status. `verificationStatus` is source confidence only, not EVReady field verification.
+
+### `PATCH /api/v1/admin/chargers/{id}`
+
+Updates editable charger directory fields for one existing charger record. Returns the updated admin charger record. Returns `404` when the charger record does not exist.
+
+This protected admin endpoint is called by browser clients with session credentials, so backend CORS allowed methods must include `PATCH`.
+
+Request fields:
+
+- `chargerTypeId`
+- `name`
+- `city`
+- `area`
+- `address`
+- `latitude`
+- `longitude`
+- `chargingType`
+- `status`
+- `powerKw`
+- `priceNote`
+- `description`
+- `image`
+- `sourceUrl`
+- `sourceLabel`
+- `sourceCheckedAt`
+- `verificationStatus`
+- `active`
+- `displayOrder`
+
+Validation:
+
+- `chargerTypeId` is required and must refer to an active charger type.
+- `name` is required and must be 150 characters or fewer.
+- `city` is required and must be 100 characters or fewer.
+- `area` must be 150 characters or fewer.
+- `latitude` may be `null`; when provided, it must be between -90 and 90.
+- `longitude` may be `null`; when provided, it must be between -180 and 180.
+- `chargingType` is required and must be a valid `ChargingType`.
+- `status` is required and must be a valid `ChargerStatus`.
+- `powerKw` may be `null`; when provided, it must be greater than 0.
+- `priceNote` must be 255 characters or fewer.
+- `description` is required.
+- `image` must be 255 characters or fewer.
+- `sourceUrl` must be 500 characters or fewer.
+- `sourceLabel` must be 150 characters or fewer.
+- `verificationStatus` is required and must be a valid `VerificationStatus`.
+- `active` is required.
+- `displayOrder` is required and must be 0 or greater.
+
+Updating a charger record does not imply the charger is currently working, available, unoccupied, compatible, or priced as shown. `status` remains reported/non-live status. `verificationStatus` remains source confidence only, not EVReady field verification. Charger feedback is never applied automatically to charger records.
+
+## Protected Admin Charger Feedback APIs
+
+These endpoints require an active admin session. They expose submitted charger feedback and internal contact data to trusted admins only and must not be public.
+
+### `GET /api/v1/admin/charger-feedback`
+
+Returns charger feedback submissions newest-first, paginated with the same stable page response shape as admin lead/contact/review reads.
+
+Query parameters:
+
+- `page`, optional, default `0`
+- `size`, optional, default `20`, capped at `100`
+- `feedbackStatus`, optional
+- `chargerId`, optional
+
+Filtering is applied by repository query, not in memory. When `feedbackStatus` is provided, it must match a `ChargerFeedbackStatus` enum value.
+
+Admin charger feedback records include:
+
+- `id`
+- `chargerId`
+- `chargerName`
+- `rating`
+- `feedbackType`
+- `message`
+- `displayName`
+- `city`
+- `reportedByContact`
+- `feedbackStatus`
+- `reviewedAt`
+- `reviewedBy`
+- `createdAt`
+- `createdBy`
+- `updatedAt`
+- `updatedBy`
+
+### `GET /api/v1/admin/charger-feedback/statuses`
+
+Returns charger feedback moderation status options for admin UI controls as a plain JSON array. Values are derived from the backend `ChargerFeedbackStatus` enum.
+
+Each option includes:
+
+- `value`
+- `label`
+
+### `GET /api/v1/admin/charger-feedback/{id}`
+
+Returns one charger feedback submission for admins. Returns `404` when the feedback record does not exist.
+
+### `PATCH /api/v1/admin/charger-feedback/{id}/status`
+
+Updates moderation status and audit metadata for one charger feedback submission. Returns the updated admin charger feedback record. Returns `404` when the feedback record does not exist.
+
+This protected admin endpoint is called by browser clients with session credentials, so backend CORS allowed methods must include `PATCH`.
+
+Request fields:
+
+- `feedbackStatus`
+
+Validation:
+
+- `feedbackStatus` is required and must be a valid `ChargerFeedbackStatus`.
+
+Allowed `feedbackStatus` values:
+
+- `PENDING`
+- `APPROVED`
+- `REJECTED`
+- `SPAM`
+- `APPLIED`
+
+When feedback moves out of `PENDING`, the backend sets `reviewedAt` and `reviewedBy` from the authenticated admin principal. Updating feedback status does not update charger public status, publish feedback publicly, calculate charger rating aggregates, or imply live charger availability.
+
 ## Future Planned Reviews And Feedback APIs
 
-Public vehicle review submission, vehicle review experience type options, protected admin vehicle review moderation APIs, approved-only vehicle rating summaries, and approved-only public vehicle review retrieval are implemented above. Charger feedback APIs are not implemented yet. This section is planning-only and must not be treated as an active API contract except where an endpoint is documented elsewhere as implemented.
+Public vehicle review submission, vehicle review experience type options, protected admin vehicle review moderation APIs, approved-only vehicle rating summaries, approved-only public vehicle review retrieval, pending-only public charger feedback submission, public approved-only charger feedback retrieval, and protected admin charger feedback moderation APIs are implemented above. This section is planning-only and must not be treated as an active API contract except where an endpoint is documented elsewhere as implemented.
 
-Future public submit endpoints may include:
+Implemented public submit endpoints include:
 
-- `POST /api/v1/chargers/{id}/feedback`
+- `POST /api/v1/chargers/{id}/feedback` - stores `PENDING` submissions only and does not publish feedback
 
 Public submit endpoints should create pending submissions only. They should not publish the submitted content, expose internal moderation data, or imply EVReady has verified user claims.
 
@@ -506,16 +857,18 @@ Future public approved-only aggregate endpoints may support listing cards:
 
 Listing-card aggregates should include only average rating, stars out of 5, and rating count. Average ratings must use approved reviews only and should display with max 1 decimal place. Pending, rejected, spam, and unmoderated records must not affect public averages.
 
-Future public approved-only review/comment endpoints may support dedicated detail pages:
+Implemented public approved-only review/comment endpoints include:
 
-- `GET /api/v1/chargers/{id}/feedback`
+- `GET /api/v1/chargers/{id}/feedback` - approved feedback only
 
 These endpoints must not return unmoderated content or internal-only contact fields. Detail-page comments must not imply EVReady verifies every user-submitted claim. Charger feedback/comments must not imply live charger availability.
 
-Future protected admin moderation endpoints may include:
+Implemented protected admin moderation endpoints include:
 
-- `GET /api/v1/admin/charger-feedback`
-- `PATCH /api/v1/admin/charger-feedback/{id}/status`
+- `GET /api/v1/admin/charger-feedback` - protected admin paginated list
+- `GET /api/v1/admin/charger-feedback/statuses` - protected admin status options
+- `GET /api/v1/admin/charger-feedback/{id}` - protected admin detail
+- `PATCH /api/v1/admin/charger-feedback/{id}/status` - protected admin moderation update
 
 Protected moderation endpoints must require an active admin session. Browser-called admin moderation methods must also be reflected in Spring Security CORS allowed methods when implemented.
 

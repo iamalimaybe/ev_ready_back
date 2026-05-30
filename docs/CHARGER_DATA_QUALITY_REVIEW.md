@@ -104,9 +104,11 @@ Before adding additional charger rows, verify at minimum:
 - Verification status based on source quality, not on whether the listing seems useful.
 - Duplicate or nearby charger names to avoid misleading users into thinking one site is multiple sites.
 
-## Future Admin Fields
+## Admin Correction APIs
 
-An admin panel should eventually make these fields editable:
+Protected admin charger management APIs now allow trusted admins to list, view, create, and update charger directory records without direct database access. These APIs are for directory data management only; they do not delete chargers, import/export CSV, apply user feedback automatically, or imply live charger availability.
+
+The admin correction APIs make these fields editable:
 
 - Active/inactive state
 - Display order

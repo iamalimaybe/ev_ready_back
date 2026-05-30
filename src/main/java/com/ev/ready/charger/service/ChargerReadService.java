@@ -6,11 +6,13 @@ import com.ev.ready.charger.dto.ChargerResponse;
 import com.ev.ready.charger.enums.ChargerStatus;
 import com.ev.ready.charger.enums.ChargingType;
 import com.ev.ready.charger.repository.ChargerRepository;
+import com.ev.ready.common.PageResponse;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,9 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
 public class ChargerReadService {
+
+    private static final int DEFAULT_PUBLIC_PAGE_SIZE = 6;
+    private static final int MAX_PUBLIC_PAGE_SIZE = 50;
 
     private final ChargerRepository chargerRepository;
 
@@ -47,10 +52,39 @@ public class ChargerReadService {
                 .toList();
     }
 
+    public PageResponse<ChargerResponse> getChargers(
+            String city,
+            Long chargerTypeId,
+            String chargingType,
+            String status,
+            String sort,
+            Integer page,
+            Integer size
+    ) {
+        ChargingType parsedChargingType = parseChargingType(chargingType);
+        ChargerStatus parsedStatus = parseStatus(status);
+        PageRequest pageRequest = PageRequest.of(
+                normalizedPage(page),
+                normalizedSize(size),
+                chargerSort(sort)
+        );
+
+        return PageResponse.from(chargerRepository.findAll(
+                chargerSpecification(city, chargerTypeId, parsedChargingType, parsedStatus),
+                pageRequest
+        ).map(ChargerResponse::from));
+    }
+
     public ChargerResponse getCharger(Long id) {
         Charger charger = chargerRepository.findPublicById(id)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Charger not found"));
         return ChargerResponse.from(charger);
+    }
+
+    public void ensurePublicChargerExists(Long id) {
+        if (chargerRepository.findPublicById(id).isEmpty()) {
+            throw new ResponseStatusException(NOT_FOUND, "Charger not found");
+        }
     }
 
     public List<String> getChargerCities() {
@@ -64,7 +98,9 @@ public class ChargerReadService {
             ChargerStatus status
     ) {
         return (root, query, criteriaBuilder) -> {
-            root.fetch("chargerType", JoinType.INNER);
+            if (query.getResultType() != Long.class && query.getResultType() != long.class) {
+                root.fetch("chargerType", JoinType.INNER);
+            }
             query.distinct(true);
 
             Join<Charger, ChargerType> chargerType = root.join("chargerType", JoinType.INNER);
@@ -130,5 +166,19 @@ public class ChargerReadService {
 
     private Sort defaultChargerSort() {
         return Sort.by(Sort.Order.asc("displayOrder"), Sort.Order.asc("id"));
+    }
+
+    private int normalizedPage(Integer page) {
+        if (page == null) {
+            return 0;
+        }
+        return Math.max(page, 0);
+    }
+
+    private int normalizedSize(Integer size) {
+        if (size == null) {
+            return DEFAULT_PUBLIC_PAGE_SIZE;
+        }
+        return Math.min(Math.max(size, 1), MAX_PUBLIC_PAGE_SIZE);
     }
 }

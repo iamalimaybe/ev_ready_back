@@ -69,12 +69,15 @@ public class SecurityConfig {
                                 "/api/v1/vehicles/reviews/experience-types",
                                 "/api/v1/chargers",
                                 "/api/v1/chargers/*",
-                                "/api/v1/chargers/cities"
+                                "/api/v1/chargers/cities",
+                                "/api/v1/chargers/feedback-types",
+                                "/api/v1/chargers/*/feedback"
                         ).permitAll()
                         .requestMatchers(HttpMethod.POST,
                                 "/api/v1/leads",
                                 "/api/v1/contact-submissions",
                                 "/api/v1/vehicles/*/reviews",
+                                "/api/v1/chargers/*/feedback",
                                 "/api/v1/admin/auth/login"
                         ).permitAll()
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")

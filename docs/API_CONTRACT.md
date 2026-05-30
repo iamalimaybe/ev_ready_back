@@ -191,6 +191,28 @@ Returns a plain JSON array of distinct city names from active charger directory 
 
 If no active charger records exist, returns `[]`.
 
+### `GET /api/v1/chargers/feedback-types`
+
+Returns public charger feedback type options for frontend controls as a plain JSON array. Values are derived from the backend `ChargerFeedbackType` enum.
+
+Each option includes:
+
+- `value`
+- `label`
+
+Current values:
+
+- `WORKING`
+- `NOT_WORKING`
+- `CONNECTOR_UNAVAILABLE`
+- `PRICE_CHANGED`
+- `ACCESS_ISSUE`
+- `LOCATION_WRONG`
+- `CLOSED_OR_REMOVED`
+- `OTHER`
+
+This endpoint exposes feedback type choices only. It does not expose moderation status options, public feedback content, or live charger availability.
+
 ### `POST /api/v1/chargers/{chargerId}/feedback`
 
 Stores a public charger feedback submission with default `PENDING` moderation status. This endpoint does not publish feedback, expose approved feedback publicly, calculate public charger rating aggregates, update charger status, or imply live charger availability.

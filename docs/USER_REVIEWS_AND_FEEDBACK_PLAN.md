@@ -1,6 +1,6 @@
 # User Reviews And Feedback Plan
 
-Planning document with current implementation notes. Vehicle review submission persistence, protected admin moderation APIs, approved-only vehicle rating summaries, and approved-only public vehicle review retrieval are implemented. This does not implement charger feedback, moderation UI, authentication, or frontend review pages.
+Planning document with current implementation notes. Vehicle review submission persistence, protected admin moderation APIs, approved-only vehicle rating summaries, approved-only public vehicle review retrieval, and pending-only charger feedback submission persistence are implemented. This does not implement charger feedback public display, charger feedback rating aggregates, charger feedback admin moderation APIs, moderation UI, authentication, or frontend review pages.
 
 Vehicle and charger public DTOs currently expose `verificationStatus` as source-confidence only. Future user-submitted content must preserve that distinction: reviews and feedback are community signals, not EVReady field verification.
 
@@ -14,9 +14,9 @@ Vehicle and charger public DTOs currently expose `verificationStatus` as source-
 
 ## Non-Goals
 
-- No implementation beyond pending vehicle review submission persistence and protected admin moderation APIs.
+- No implementation beyond pending vehicle review submission persistence, protected vehicle review admin moderation APIs, approved-only vehicle public display/aggregates, and pending-only charger feedback submission persistence.
 - No public user auth yet.
-- No charger feedback, moderation UI, authentication, or frontend review pages.
+- No charger feedback public display, charger feedback admin moderation APIs, moderation UI, authentication, or frontend review pages.
 - No public display of pending, rejected, spam, or otherwise unmoderated content.
 - No fake or static reviews.
 - No modal-based detail/review display as the main user experience.
@@ -73,9 +73,9 @@ Basic fields likely needed later:
 
 Charger feedback is higher risk than vehicle reviews because users may rely on it before travel. Charger feedback should be framed as community reporting or feedback, not live reliability or guaranteed availability.
 
-Future behavior:
+Implemented initial behavior:
 
-- Users may later report charger working/not working observations.
+- Users may report charger working/not working observations.
 - Users may report connector unavailable or wrong.
 - Users may report price changes.
 - Users may report access issues.
@@ -92,7 +92,7 @@ Future behavior:
 Basic fields likely needed later:
 
 - `chargerId`
-- `rating`, optional if charger star ratings are allowed
+- `rating`, optional
 - `feedbackType`
 - `message`
 - `displayName`, optional
@@ -202,7 +202,7 @@ Free-text fields should be treated as untrusted user input. Future public displa
 - Phase 3: Admin moderation APIs for pending reviews. Implemented for backend admin workflows; admin UI remains separate.
 - Phase 4: Public approved-only aggregate ratings on listing cards. Implemented in backend vehicle list/detail DTOs.
 - Phase 5: Vehicle detail page with approved reviews. Approved-only backend endpoint implemented; frontend rendering remains separate.
-- Phase 6: Charger feedback persistence and admin moderation.
+- Phase 6: Charger feedback persistence. Implemented for public pending-only submission; admin moderation remains separate.
 - Phase 7: Charger detail page with approved feedback/comments.
 
 Public user auth remains deferred unless abuse, ownership, edit/delete, or trust needs justify it.
@@ -215,7 +215,7 @@ Public helper and submit endpoints:
 
 - `GET /api/v1/vehicles/reviews/experience-types` - implemented; returns controlled experience type options
 - `POST /api/v1/vehicles/{id}/reviews` - implemented; stores `PENDING` submissions only and does not publish reviews
-- `POST /api/v1/chargers/{id}/feedback`
+- `POST /api/v1/chargers/{id}/feedback` - implemented; stores `PENDING` submissions only and does not publish feedback
 
 Public approved-only aggregate endpoints:
 
@@ -249,7 +249,7 @@ API rules:
 Current and likely future entities:
 
 - `VehicleReview` - implemented for submission persistence, protected admin moderation, approved-only rating summaries, and approved-only public retrieval
-- `ChargerFeedback`
+- `ChargerFeedback` - implemented for pending-only public submission persistence
 
 Do not prescribe exact future migrations here. When implemented, follow the existing backend conventions:
 

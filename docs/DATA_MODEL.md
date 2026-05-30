@@ -119,6 +119,31 @@ Public submissions default to `PENDING`. Protected admin APIs can read submissio
 
 Vehicle list/detail DTOs expose an approved-only rating summary derived from `VehicleReview` records with `reviewStatus = APPROVED`. Public approved review retrieval returns only safe public fields. Pending, rejected, and spam reviews must not affect public averages and must not be returned publicly.
 
+## ChargerFeedback
+
+Represents a public charger feedback submission stored for moderation.
+
+Field summary:
+
+- `id`
+- `chargerId`
+- `rating`
+- `feedbackType`
+- `message`
+- `displayName`
+- `city`
+- `reportedByContact`
+- `feedbackStatus`
+- `reviewedAt`
+- `reviewedBy`
+- audit fields
+
+`feedbackStatus` is a Java enum with values: `PENDING`, `APPROVED`, `REJECTED`, `SPAM`, and `APPLIED`.
+
+`feedbackType` is a Java enum with controlled values: `WORKING`, `NOT_WORKING`, `CONNECTOR_UNAVAILABLE`, `PRICE_CHANGED`, `ACCESS_ISSUE`, `LOCATION_WRONG`, `CLOSED_OR_REMOVED`, and `OTHER`.
+
+Public submissions default to `PENDING`. Charger feedback is not exposed publicly, does not affect public rating aggregates, and does not update charger status. `reportedByContact` is internal-only and must be kept out of any future public response DTOs.
+
 ## Data Conventions
 
 - All entity IDs should be `BIGINT` in PostgreSQL and `Long` in Java.
@@ -129,14 +154,14 @@ Vehicle list/detail DTOs expose an approved-only rating summary derived from `Ve
   - `updatedAt`
   - `updatedBy`
 - Every JPA entity should include equals and hashCode.
-- Admin moderation UI and charger feedback are deferred.
+- Admin moderation UI is deferred.
 - Vehicle `sourceUrl`, `sourceLabel`, and `sourceCheckedAt` fields remain internal. Vehicle public response DTOs expose `verificationStatus` only for frontend source-confidence badges.
 - Charger `sourceUrl`, `sourceLabel`, and `sourceCheckedAt` fields remain internal. Charger public response DTOs expose `verificationStatus` only for frontend source-confidence badges.
 - Vehicle `batteryCapacityKwh` should preserve up to 3 decimal places.
 
 ## Future Planned Reviews And Feedback
 
-Vehicle review submission persistence, protected admin moderation APIs, approved-only rating summaries, and approved-only public review retrieval exist. Charger feedback is not implemented yet. Future charger feedback persistence should use a separate entity, likely `ChargerFeedback`, rather than storing user-submitted feedback directly on `Charger`.
+Vehicle review submission persistence, protected admin moderation APIs, approved-only rating summaries, approved-only public review retrieval, and pending-only charger feedback submission persistence exist. Charger feedback uses a separate `ChargerFeedback` entity rather than storing user-submitted feedback directly on `Charger`.
 
 Future review/feedback entities should follow the same ID and audit conventions: `BIGINT` / `Long` primary keys, `createdAt`, `createdBy`, `updatedAt`, and `updatedBy`. Moderation metadata such as status, moderator, timestamp, and reason should be included when the feature is implemented. Avoid entity relationships unless the implementation later needs them.
 

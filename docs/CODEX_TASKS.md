@@ -108,6 +108,9 @@
 - Add Pending Charger Feedback Submission Persistence
   - Added public charger feedback submission persistence with default `PENDING` status, without public feedback retrieval, approved feedback exposure, charger rating aggregates, charger status updates, admin moderation APIs, frontend code, or live availability implications.
   - Changed files: `src/main/resources/db/changelog/V016__create_charger_feedback_table.sql`, `src/main/java/com/ev/ready/charger/service/ChargerReadService.java`, `src/main/java/com/ev/ready/config/SecurityConfig.java`, `src/main/java/com/ev/ready/feedback/controller/ChargerFeedbackController.java`, `src/main/java/com/ev/ready/feedback/domain/ChargerFeedback.java`, `src/main/java/com/ev/ready/feedback/dto/ChargerFeedbackSubmissionResponse.java`, `src/main/java/com/ev/ready/feedback/dto/CreateChargerFeedbackRequest.java`, `src/main/java/com/ev/ready/feedback/enums/ChargerFeedbackStatus.java`, `src/main/java/com/ev/ready/feedback/enums/ChargerFeedbackType.java`, `src/main/java/com/ev/ready/feedback/repository/ChargerFeedbackRepository.java`, `src/main/java/com/ev/ready/feedback/service/ChargerFeedbackService.java`, `docs/API_CONTRACT.md`, `docs/DATA_MODEL.md`, `docs/USER_REVIEWS_AND_FEEDBACK_PLAN.md`, `docs/CODEX_TASKS.md`
+- Add Public Charger Feedback Type Options API
+  - Added a public charger feedback type options endpoint derived from `ChargerFeedbackType`, without exposing feedback statuses, public feedback content, or live charger availability.
+  - Changed files: `src/main/java/com/ev/ready/config/SecurityConfig.java`, `src/main/java/com/ev/ready/feedback/controller/ChargerFeedbackController.java`, `src/main/java/com/ev/ready/feedback/dto/ChargerFeedbackTypeOptionResponse.java`, `src/main/java/com/ev/ready/feedback/service/ChargerFeedbackService.java`, `docs/API_CONTRACT.md`, `docs/CODEX_TASKS.md`
 
 ## Charger Seed Readiness Note
 

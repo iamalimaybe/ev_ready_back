@@ -69,7 +69,8 @@ public class SecurityConfig {
                                 "/api/v1/vehicles/reviews/experience-types",
                                 "/api/v1/chargers",
                                 "/api/v1/chargers/*",
-                                "/api/v1/chargers/cities"
+                                "/api/v1/chargers/cities",
+                                "/api/v1/chargers/feedback-types"
                         ).permitAll()
                         .requestMatchers(HttpMethod.POST,
                                 "/api/v1/leads",

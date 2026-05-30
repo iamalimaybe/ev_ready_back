@@ -48,6 +48,8 @@ Charger uses a `ChargerType` reference for connector/filter information.
 
 `sourceUrl`, `sourceLabel`, and `sourceCheckedAt` remain internal provenance fields. `verificationStatus` is exposed on public charger response DTOs for frontend source-confidence badges. `OFFICIAL` means the charger data is source-backed from an official operator, network, distributor, or similar source; it must not imply live charger availability, verified price, guaranteed charger status, or EVReady field verification.
 
+Protected admin charger correction APIs can update editable charger directory fields, including internal provenance fields. Public charger response DTOs must continue excluding `sourceUrl`, `sourceLabel`, and `sourceCheckedAt`. Admin updates to `status` remain reported/non-live directory corrections and do not imply current charger availability.
+
 ## LeadSubmission
 
 Represents a Get Help / lead capture submission from the frontend.

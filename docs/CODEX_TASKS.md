@@ -123,6 +123,9 @@
 - Add Protected Admin Charger Creation And Form Options
   - Added protected admin charger creation and admin charger form options for active charger types and enum choices, without delete, bulk update, CSV import/export, frontend code, public provenance fields, live-status claims, or automatic feedback application.
   - Changed files: `src/main/java/com/ev/ready/admin/charger/controller/AdminChargerController.java`, `src/main/java/com/ev/ready/charger/dto/AdminChargerFormOptionsResponse.java`, `src/main/java/com/ev/ready/charger/dto/CreateChargerRequest.java`, `src/main/java/com/ev/ready/charger/dto/OptionResponse.java`, `src/main/java/com/ev/ready/charger/service/ChargerAdminService.java`, `docs/API_CONTRACT.md`, `docs/ADMIN_MVP_PLAN.md`, `docs/CHARGER_DATA_QUALITY_REVIEW.md`, `docs/CODEX_TASKS.md`
+- Add Public Vehicle And Charger List Pagination
+  - Added optional `page` and `size` support for public vehicle and charger list APIs, returning a stable page response only when pagination parameters are present while preserving legacy plain-array responses otherwise.
+  - Changed files: `src/main/java/com/ev/ready/catalog/controller/VehicleController.java`, `src/main/java/com/ev/ready/catalog/service/VehicleReadService.java`, `src/main/java/com/ev/ready/charger/controller/ChargerController.java`, `src/main/java/com/ev/ready/charger/service/ChargerReadService.java`, `docs/API_CONTRACT.md`, `docs/CODEX_TASKS.md`
 
 ## Charger Seed Readiness Note
 

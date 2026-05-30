@@ -40,6 +40,21 @@ Returns active charger types ordered by `displayOrder` ascending, then `name` as
 
 Returns a list of vehicles for the catalog.
 
+When neither `page` nor `size` is provided, this endpoint preserves the legacy response and returns a plain JSON array.
+
+When `page` or `size` is provided, this endpoint returns a stable page response:
+
+- `content`
+- `page`
+- `size`
+- `totalElements`
+- `totalPages`
+
+Pagination parameters:
+
+- `page`, optional, default `0` when pagination is requested
+- `size`, optional, default `6` when pagination is requested, capped at `50`
+
 Public vehicle list responses include `verificationStatus`. Frontend clients use this value for source-confidence badges. `OFFICIAL` means the vehicle data came from an official OEM, operator, or distributor-type source; the UI must not describe it as "Verified" or imply EVReady personally audited vehicle specs or prices.
 
 Public vehicle list responses include `ratingSummary` based only on approved vehicle reviews:
@@ -51,7 +66,7 @@ Public vehicle list responses include `ratingSummary` based only on approved veh
 
 `sourceUrl` and `sourceLabel` remain internal and are not exposed in public vehicle responses. Missing or `null` `verificationStatus` values should be treated by frontend clients as `UNVERIFIED`.
 
-Planned filters:
+Supported filters:
 
 - `type`
 - `brandId`
@@ -59,8 +74,10 @@ Planned filters:
 - `priceMax`
 - `rangeMin`
 - `dcFastCharging`
+- `page`
+- `size`
 
-Planned sort values:
+Supported sort values:
 
 - default: `displayOrder` ascending, then `id` ascending
 - `priceAsc`
@@ -160,18 +177,35 @@ Public approved review records do not include moderation metadata, `reviewStatus
 
 Returns a list of active chargers for the directory. Chargers whose charger type is inactive are not returned.
 
+When neither `page` nor `size` is provided, this endpoint preserves the legacy response and returns a plain JSON array.
+
+When `page` or `size` is provided, this endpoint returns a stable page response:
+
+- `content`
+- `page`
+- `size`
+- `totalElements`
+- `totalPages`
+
+Pagination parameters:
+
+- `page`, optional, default `0` when pagination is requested
+- `size`, optional, default `6` when pagination is requested, capped at `50`
+
 Public charger list responses include `verificationStatus`. Frontend clients use this value for source-confidence badges. `OFFICIAL` means the charger data came from an official operator, network, distributor, or similar source; the UI must not imply live charger availability, verified price, guaranteed operational status, or EVReady field verification.
 
 `sourceUrl`, `sourceLabel`, and `sourceCheckedAt` remain internal and are not exposed in public charger responses. Missing or `null` `verificationStatus` values should be treated by frontend clients as `UNVERIFIED`.
 
-Planned filters:
+Supported filters:
 
 - `city`
 - `chargerTypeId`
 - `chargingType`
 - `status`
+- `page`
+- `size`
 
-Planned sort values:
+Supported sort values:
 
 - default: `displayOrder` ascending, then `id` ascending
 - `nameAsc`

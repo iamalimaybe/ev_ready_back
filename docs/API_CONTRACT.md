@@ -586,6 +586,106 @@ Allowed `reviewStatus` values:
 
 Updating a review status does not publish reviews publicly, calculate rating aggregates, add stars to vehicle cards, or imply EVReady verified the user-submitted claim.
 
+## Protected Admin Charger Directory APIs
+
+These endpoints require an active admin session. They expose charger correction fields to trusted admins only and must not be public.
+
+### `GET /api/v1/admin/chargers`
+
+Returns charger directory records, including active and inactive records, paginated with the same stable page response shape as other admin reads.
+
+Query parameters:
+
+- `page`, optional, default `0`
+- `size`, optional, default `20`, capped at `100`
+- `active`, optional
+- `city`, optional
+- `status`, optional
+- `verificationStatus`, optional
+
+Results are ordered by `displayOrder` ascending, then `id` ascending.
+
+Admin charger records include:
+
+- `id`
+- `chargerType`
+- `name`
+- `city`
+- `area`
+- `address`
+- `latitude`
+- `longitude`
+- `chargingType`
+- `status`
+- `powerKw`
+- `priceNote`
+- `description`
+- `image`
+- `sourceUrl`
+- `sourceLabel`
+- `sourceCheckedAt`
+- `verificationStatus`
+- `active`
+- `displayOrder`
+- `createdAt`
+- `createdBy`
+- `updatedAt`
+- `updatedBy`
+
+### `GET /api/v1/admin/chargers/{id}`
+
+Returns one charger record for admin editing. Returns `404` when the charger record does not exist.
+
+### `PATCH /api/v1/admin/chargers/{id}`
+
+Updates editable charger directory fields for one existing charger record. Returns the updated admin charger record. Returns `404` when the charger record does not exist.
+
+This protected admin endpoint is called by browser clients with session credentials, so backend CORS allowed methods must include `PATCH`.
+
+Request fields:
+
+- `chargerTypeId`
+- `name`
+- `city`
+- `area`
+- `address`
+- `latitude`
+- `longitude`
+- `chargingType`
+- `status`
+- `powerKw`
+- `priceNote`
+- `description`
+- `image`
+- `sourceUrl`
+- `sourceLabel`
+- `sourceCheckedAt`
+- `verificationStatus`
+- `active`
+- `displayOrder`
+
+Validation:
+
+- `chargerTypeId` is required and must refer to an active charger type.
+- `name` is required and must be 150 characters or fewer.
+- `city` is required and must be 100 characters or fewer.
+- `area` must be 150 characters or fewer.
+- `latitude` may be `null`; when provided, it must be between -90 and 90.
+- `longitude` may be `null`; when provided, it must be between -180 and 180.
+- `chargingType` is required and must be a valid `ChargingType`.
+- `status` is required and must be a valid `ChargerStatus`.
+- `powerKw` may be `null`; when provided, it must be greater than 0.
+- `priceNote` must be 255 characters or fewer.
+- `description` is required.
+- `image` must be 255 characters or fewer.
+- `sourceUrl` must be 500 characters or fewer.
+- `sourceLabel` must be 150 characters or fewer.
+- `verificationStatus` is required and must be a valid `VerificationStatus`.
+- `active` is required.
+- `displayOrder` is required and must be 0 or greater.
+
+Updating a charger record does not imply the charger is currently working, available, unoccupied, compatible, or priced as shown. `status` remains reported/non-live status. `verificationStatus` remains source confidence only, not EVReady field verification. Charger feedback is never applied automatically to charger records.
+
 ## Protected Admin Charger Feedback APIs
 
 These endpoints require an active admin session. They expose submitted charger feedback and internal contact data to trusted admins only and must not be public.

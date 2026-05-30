@@ -47,6 +47,7 @@ Implemented first admin scope:
 - Update Contact Us submission status.
 - Review and moderate vehicle review submissions.
 - Review and moderate charger feedback submissions.
+- Review and correct charger directory records.
 
 Still deferred from current scope:
 
@@ -58,9 +59,6 @@ Later scope:
 - Manage vehicle active state.
 - Manage vehicle display order.
 - Manage basic vehicle catalog fields after data-quality workflows are clearer.
-- Manage charger active state.
-- Manage charger display order.
-- Manage basic charger directory fields after data-quality workflows are clearer.
 
 Vehicle and charger management should remain conservative. Vehicle source confidence does not mean field verification, and charger status is not live availability.
 
@@ -141,14 +139,14 @@ Implemented protected admin API groups:
   - List, view detail, status options, and moderation status update.
 - `/api/v1/admin/charger-feedback`
   - List, view detail, status options, and moderation status update.
+- `/api/v1/admin/chargers`
+  - List, view detail, and update editable charger directory correction fields.
 
 Future protected admin API groups and actions, not implemented yet:
 
 - Internal notes.
 - `/api/v1/admin/vehicles`
   - Later: list/edit basic catalog fields, active state, display order.
-- `/api/v1/admin/chargers`
-  - Later: list/edit basic directory fields, active state, display order.
 
 All admin API groups must be protected. Public frontend clients must not call or receive admin data.
 

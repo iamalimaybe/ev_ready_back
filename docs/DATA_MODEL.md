@@ -142,7 +142,7 @@ Field summary:
 
 `feedbackType` is a Java enum with controlled values: `WORKING`, `NOT_WORKING`, `CONNECTOR_UNAVAILABLE`, `PRICE_CHANGED`, `ACCESS_ISSUE`, `LOCATION_WRONG`, `CLOSED_OR_REMOVED`, and `OTHER`.
 
-Public submissions default to `PENDING`. Charger feedback is not exposed publicly, does not affect public rating aggregates, and does not update charger status. `reportedByContact` is internal-only and must be kept out of any future public response DTOs.
+Public submissions default to `PENDING`. Protected admin APIs can read submissions and update `feedbackStatus`, `reviewedAt`, `reviewedBy`, and update audit fields. Charger feedback is not exposed publicly, does not affect public rating aggregates, and does not update charger status. `reportedByContact` is internal-only and must be kept out of any future public response DTOs.
 
 ## Data Conventions
 

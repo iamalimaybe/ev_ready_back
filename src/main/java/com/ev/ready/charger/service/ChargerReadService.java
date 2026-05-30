@@ -53,6 +53,12 @@ public class ChargerReadService {
         return ChargerResponse.from(charger);
     }
 
+    public void ensurePublicChargerExists(Long id) {
+        if (chargerRepository.findPublicById(id).isEmpty()) {
+            throw new ResponseStatusException(NOT_FOUND, "Charger not found");
+        }
+    }
+
     public List<String> getChargerCities() {
         return chargerRepository.findDistinctPublicCities();
     }

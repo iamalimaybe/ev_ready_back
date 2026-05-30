@@ -75,6 +75,7 @@ public class SecurityConfig {
                                 "/api/v1/leads",
                                 "/api/v1/contact-submissions",
                                 "/api/v1/vehicles/*/reviews",
+                                "/api/v1/chargers/*/feedback",
                                 "/api/v1/admin/auth/login"
                         ).permitAll()
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")

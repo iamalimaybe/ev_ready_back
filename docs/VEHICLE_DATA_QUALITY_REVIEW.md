@@ -82,9 +82,9 @@ Before adding additional rows, verify at minimum:
 - `source_url`, `source_label`, and `source_checked_at` are present and explain where the data came from.
 - Duplicate model/variant rows are intentional and differentiated.
 
-## Future Admin Fields
+## Admin Correction APIs
 
-An admin panel should eventually make these fields editable:
+Protected admin vehicle APIs now support creating and correcting catalog records, including these editable fields:
 
 - Active/inactive state
 - Display order
@@ -106,6 +106,8 @@ An admin panel should eventually make these fields editable:
 
 Admin workflows should also support review-oriented metadata later, such as a source note, last reviewed by, last reviewed at, and a reason for changing verification status. Those fields are data-management needs, not required public catalog fields today.
 
+Admin create/update actions are catalog corrections only. They do not mean EVReady personally verified specifications, prices, availability, range, battery capacity, warranty, or dealer claims.
+
 ## Practical Recommendation
 
-Before admin CRUD or new catalog features, keep the frontend wording conservative. Treat price, range, battery, charging support, and source confidence as helpful catalog signals, not guarantees. New seed additions should prefer fewer, better-sourced rows over broad coverage with weak references.
+Keep the frontend wording conservative. Treat price, range, battery, charging support, and source confidence as helpful catalog signals, not guarantees. New seed additions should prefer fewer, better-sourced rows over broad coverage with weak references.

@@ -126,6 +126,9 @@
 - Add Public Vehicle And Charger List Pagination
   - Added optional `page` and `size` support for public vehicle and charger list APIs, returning a stable page response only when pagination parameters are present while preserving legacy plain-array responses otherwise.
   - Changed files: `src/main/java/com/ev/ready/catalog/controller/VehicleController.java`, `src/main/java/com/ev/ready/catalog/service/VehicleReadService.java`, `src/main/java/com/ev/ready/charger/controller/ChargerController.java`, `src/main/java/com/ev/ready/charger/service/ChargerReadService.java`, `docs/API_CONTRACT.md`, `docs/CODEX_TASKS.md`
+- Add Protected Admin Vehicle Catalogue Management APIs
+  - Added protected admin vehicle list, detail, create, update editable vehicle catalog fields, and form options APIs, without delete, bulk update, CSV import/export, frontend code, public provenance fields, EVReady verification claims, or review/rating behavior changes.
+  - Changed files: `src/main/java/com/ev/ready/admin/vehicle/controller/AdminVehicleController.java`, `src/main/java/com/ev/ready/catalog/dto/AdminVehicleFormOptionsResponse.java`, `src/main/java/com/ev/ready/catalog/dto/AdminVehicleResponse.java`, `src/main/java/com/ev/ready/catalog/dto/CreateVehicleRequest.java`, `src/main/java/com/ev/ready/catalog/dto/UpdateVehicleRequest.java`, `src/main/java/com/ev/ready/catalog/repository/BrandRepository.java`, `src/main/java/com/ev/ready/catalog/service/BrandReadService.java`, `src/main/java/com/ev/ready/catalog/service/VehicleAdminService.java`, `docs/API_CONTRACT.md`, `docs/DATA_MODEL.md`, `docs/ADMIN_MVP_PLAN.md`, `docs/VEHICLE_DATA_QUALITY_REVIEW.md`, `docs/CODEX_TASKS.md`
 
 ## Charger Seed Readiness Note
 

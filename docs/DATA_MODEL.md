@@ -14,6 +14,8 @@ Internal source/provenance fields support production seed data quality. `sourceU
 
 `batteryCapacityKwh` supports up to 3 decimal places so smaller EV bike and scooter battery values can be stored without rounding.
 
+Protected admin vehicle catalog APIs can create records and update editable vehicle fields, including active state, display order, and internal provenance fields. Public vehicle response DTOs must continue excluding `sourceUrl`, `sourceLabel`, and `sourceCheckedAt`. Admin changes to `verificationStatus` remain source-confidence updates only and do not imply EVReady verified specs, pricing, availability, range, battery capacity, warranty, or dealer claims.
+
 ## Charger
 
 Represents a charging location shown in the charger directory.

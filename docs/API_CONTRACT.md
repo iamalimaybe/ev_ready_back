@@ -620,6 +620,147 @@ Allowed `reviewStatus` values:
 
 Updating a review status does not publish reviews publicly, calculate rating aggregates, add stars to vehicle cards, or imply EVReady verified the user-submitted claim.
 
+## Protected Admin Vehicle Catalogue APIs
+
+These endpoints require an active admin session. They expose vehicle catalog correction fields to trusted admins only and must not be public.
+
+### `GET /api/v1/admin/vehicles`
+
+Returns vehicle catalog records, including active and inactive records, paginated with the same stable page response shape as other admin reads.
+
+Query parameters:
+
+- `page`, optional, default `0`
+- `size`, optional, default `20`, capped at `100`
+- `active`, optional
+- `type`, optional
+- `brandId`, optional
+- `chargerTypeId`, optional
+- `verificationStatus`, optional
+
+Results are ordered by `displayOrder` ascending, then `id` ascending.
+
+Admin vehicle records include:
+
+- `id`
+- `type`
+- `brand`
+- `chargerType`
+- `model`
+- `variant`
+- `pricePkr`
+- `rangeKm`
+- `batteryCapacityKwh`
+- `dcFastCharging`
+- `image`
+- `description`
+- `sourceUrl`
+- `sourceLabel`
+- `sourceCheckedAt`
+- `verificationStatus`
+- `active`
+- `displayOrder`
+- `createdAt`
+- `createdBy`
+- `updatedAt`
+- `updatedBy`
+
+### `GET /api/v1/admin/vehicles/{id}`
+
+Returns one vehicle record for admin editing. Returns `404` when the vehicle record does not exist.
+
+### `GET /api/v1/admin/vehicles/form-options`
+
+Returns admin vehicle form options as a plain JSON object so admin clients do not hardcode brand, charger type, or enum choices.
+
+Response fields:
+
+- `brands`
+- `chargerTypes`
+- `vehicleTypes`
+- `verificationStatuses`
+
+`brands` includes active brand records only. `chargerTypes` includes active charger type records only. Enum option arrays include:
+
+- `value`
+- `label`
+
+### `POST /api/v1/admin/vehicles`
+
+Creates one vehicle catalog record. Returns `201 Created` with the created admin vehicle record.
+
+This protected admin endpoint is called by browser clients with session credentials, so backend CORS allowed methods must include `POST`.
+
+Request fields:
+
+- `type`
+- `brandId`
+- `chargerTypeId`
+- `model`
+- `variant`
+- `pricePkr`
+- `rangeKm`
+- `batteryCapacityKwh`
+- `dcFastCharging`
+- `image`
+- `description`
+- `sourceUrl`
+- `sourceLabel`
+- `sourceCheckedAt`
+- `verificationStatus`
+- `active`
+- `displayOrder`
+
+Validation is the same as `PATCH /api/v1/admin/vehicles/{id}`, except `active` may be omitted and defaults to `true` when the rest of the request is valid, and `dcFastCharging` may be omitted and defaults to `false`.
+
+Creating a vehicle record does not expose it through public APIs unless it is active and normal public filters allow it. Creating a vehicle record does not imply EVReady personally verified specs, price, availability, range, battery, warranty, or dealer claims. `verificationStatus` is source confidence only.
+
+### `PATCH /api/v1/admin/vehicles/{id}`
+
+Updates editable vehicle catalog fields for one existing vehicle record. Returns the updated admin vehicle record. Returns `404` when the vehicle record does not exist.
+
+This protected admin endpoint is called by browser clients with session credentials, so backend CORS allowed methods must include `PATCH`.
+
+Request fields:
+
+- `type`
+- `brandId`
+- `chargerTypeId`
+- `model`
+- `variant`
+- `pricePkr`
+- `rangeKm`
+- `batteryCapacityKwh`
+- `dcFastCharging`
+- `image`
+- `description`
+- `sourceUrl`
+- `sourceLabel`
+- `sourceCheckedAt`
+- `verificationStatus`
+- `active`
+- `displayOrder`
+
+Validation:
+
+- `type` is required and must be a valid `VehicleType`.
+- `brandId` is required and must refer to an active brand.
+- `chargerTypeId` may be `null`; when provided, it must refer to an active charger type.
+- `model` is required and must be 150 characters or fewer.
+- `variant` must be 150 characters or fewer.
+- `pricePkr` may be `null`; when provided, it must be 0 or greater.
+- `rangeKm` may be `null`; when provided, it must be greater than 0.
+- `batteryCapacityKwh` may be `null`; when provided, it must be greater than 0 and preserves the existing 3-decimal precision.
+- `dcFastCharging` is required.
+- `image` must be 255 characters or fewer.
+- `sourceUrl` must be 500 characters or fewer.
+- `sourceLabel` must be 150 characters or fewer.
+- `verificationStatus` is required and must be a valid `VerificationStatus`.
+- `active` is required.
+- `displayOrder` is required and must be 0 or greater.
+
+Updating a vehicle record does not imply EVReady personally verified specs, price, availability, range, battery, warranty, or dealer claims. `verificationStatus` remains source confidence only. Public vehicle ratings and reviews remain approved-review-only and are not affected by these admin catalog APIs.
+
 ## Protected Admin Charger Directory APIs
 
 These endpoints require an active admin session. They expose charger correction fields to trusted admins only and must not be public.

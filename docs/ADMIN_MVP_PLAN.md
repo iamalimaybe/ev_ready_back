@@ -1,6 +1,6 @@
 # Backend Admin MVP Plan
 
-This document plans the backend Admin MVP for EVReady Pakistan. The minimal admin authentication foundation, protected lead/contact retrieval APIs, simple lead/contact status updates, protected vehicle review moderation APIs, and protected charger feedback moderation APIs now exist, but internal notes, broader admin workflows, catalog management, and frontend UI work remain deferred.
+This document plans the backend Admin MVP for EVReady Pakistan. The minimal admin authentication foundation, protected lead/contact retrieval APIs, simple lead/contact status updates, protected vehicle review moderation APIs, protected charger feedback moderation APIs, protected vehicle catalog management APIs, and protected charger directory management APIs now exist, but internal notes, broader admin workflows, and frontend UI work remain deferred.
 
 ## Goal
 
@@ -10,7 +10,7 @@ The Admin MVP should give trusted EVReady operators a protected way to review an
 - Contact Us submissions.
 - Vehicle review submissions.
 - Charger feedback submissions.
-- Later, basic vehicle catalog visibility/order/content.
+- Vehicle catalog visibility/order/content.
 - Later, basic charger directory visibility/order/content.
 
 The first version should reduce direct database access without exposing personal user data or internal catalog management fields to the public frontend.
@@ -47,6 +47,7 @@ Implemented first admin scope:
 - Update Contact Us submission status.
 - Review and moderate vehicle review submissions.
 - Review and moderate charger feedback submissions.
+- Review and correct vehicle catalog records.
 - Review and correct charger directory records.
 
 Still deferred from current scope:
@@ -56,9 +57,7 @@ Still deferred from current scope:
 
 Later scope:
 
-- Manage vehicle active state.
-- Manage vehicle display order.
-- Manage basic vehicle catalog fields after data-quality workflows are clearer.
+- Delete, bulk update, import, or export vehicle catalog records.
 
 Vehicle and charger management should remain conservative. Vehicle source confidence does not mean field verification, and charger status is not live availability.
 
@@ -141,12 +140,12 @@ Implemented protected admin API groups:
   - List, view detail, status options, and moderation status update.
 - `/api/v1/admin/chargers`
   - List, view detail, create, update editable charger directory fields, and return form options.
+- `/api/v1/admin/vehicles`
+  - List, view detail, create, update editable vehicle catalog fields, and return form options.
 
 Future protected admin API groups and actions, not implemented yet:
 
 - Internal notes.
-- `/api/v1/admin/vehicles`
-  - Later: list/edit basic catalog fields, active state, display order.
 
 All admin API groups must be protected. Public frontend clients must not call or receive admin data.
 

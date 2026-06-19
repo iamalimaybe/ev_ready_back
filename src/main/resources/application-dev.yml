@@ -10,3 +10,8 @@ spring:
 evready:
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+  ai:
+    recommender:
+      base-url: ${AI_RECOMMENDER_BASE_URL:http://localhost:8081}
+      connect-timeout: ${AI_RECOMMENDER_CONNECT_TIMEOUT:5s}
+      read-timeout: ${AI_RECOMMENDER_READ_TIMEOUT:95s}

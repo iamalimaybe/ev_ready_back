@@ -10,6 +10,11 @@ spring:
 evready:
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS}
+  ai:
+    recommender:
+      base-url: ${AI_RECOMMENDER_BASE_URL}
+      connect-timeout: ${AI_RECOMMENDER_CONNECT_TIMEOUT:5s}
+      read-timeout: ${AI_RECOMMENDER_READ_TIMEOUT:95s}
 
 logging:
   file:

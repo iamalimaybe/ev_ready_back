@@ -46,6 +46,13 @@ services:
       - "127.0.0.1:${SERVER_PORT:-8080}:${SERVER_PORT:-8080}"
     volumes:
       - /opt/evready/logs/backend:${LOG_PATH:-/app/logs}
+    networks:
+      - default
+      - evready_internal
 
 volumes:
   postgres_data:
+
+networks:
+  evready_internal:
+    external: true

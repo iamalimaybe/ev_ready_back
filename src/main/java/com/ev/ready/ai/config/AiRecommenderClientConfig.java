@@ -7,7 +7,10 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
 @Configuration
-@EnableConfigurationProperties(AiRecommenderProperties.class)
+@EnableConfigurationProperties({
+        AiRecommenderProperties.class,
+        AiRecommendationRateLimitProperties.class
+})
 public class AiRecommenderClientConfig {
 
     @Bean

@@ -15,6 +15,10 @@ evready:
       base-url: ${AI_RECOMMENDER_BASE_URL}
       connect-timeout: ${AI_RECOMMENDER_CONNECT_TIMEOUT:5s}
       read-timeout: ${AI_RECOMMENDER_READ_TIMEOUT:95s}
+    recommendation-rate-limit:
+      max-requests: ${AI_RECOMMENDATION_RATE_LIMIT_MAX_REQUESTS:2}
+      window: ${AI_RECOMMENDATION_RATE_LIMIT_WINDOW:10m}
+      entry-ttl: ${AI_RECOMMENDATION_RATE_LIMIT_ENTRY_TTL:30m}
 
 logging:
   file:

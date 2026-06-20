@@ -2,9 +2,11 @@
 
 Backend service for EVReady Pakistan.
 
-This service provides public APIs for the EV vehicle catalog, charger directory, lead capture, contact submissions, vehicle reviews, and charger feedback. It also includes protected admin APIs for reviewing operational submissions, moderating user-submitted content, and managing catalog data.
+This service provides public APIs for the EV vehicle catalog, charger directory, AI EV recommendation gateway, lead capture, contact submissions, vehicle reviews, and charger feedback. It also includes protected admin APIs for reviewing operational submissions, moderating user-submitted content, and managing catalog data.
 
 The backend is designed to keep public data access separate from internal/admin workflows. Public APIs return only safe frontend-facing fields. Admin APIs are protected and expose sensitive operational data only to authenticated admins.
+
+For AI recommendations, this backend acts as the public gateway. The browser calls the backend, and the backend calls the internal AI recommender service. The AI recommender and model runtime are not intended to be browser-facing public services.
 
 ## Tech Stack
 
@@ -17,6 +19,7 @@ The backend is designed to keep public data access separate from internal/admin 
 * Bean Validation
 * Spring Web MVC
 * Spring Security
+* Bucket4j
 * Lombok
 * Docker Compose
 
@@ -28,6 +31,8 @@ Implemented backend scope includes:
 * Charger directory APIs
 * Brand APIs
 * Charger type APIs
+* AI EV recommendation gateway APIs
+* Backend-side rate limiting for expensive AI recommendation creation
 * Get Help lead submission API
 * Contact Us submission API
 * SMTP-based lead/contact notification support
@@ -62,6 +67,8 @@ This backend does not currently provide:
 * Admin frontend UI
 * Complex CRM workflows
 * SLA or callback guarantee workflows
+* Direct public browser access to the AI recommender service
+* Direct public browser access to model runtime services
 
 ## Important Data Trust Rules
 
@@ -84,6 +91,14 @@ Charger public responses may include `verificationStatus` as a source-confidence
 Charger `status` is not live availability. It should not be presented as proof that a charger is working, available, unoccupied, compatible, or priced as shown at the time of travel.
 
 Internal charger provenance fields such as `sourceUrl`, `sourceLabel`, and `sourceCheckedAt` are not exposed through public charger DTOs.
+
+### AI Recommendation Data
+
+AI EV recommendations are generated from available EVReady catalog data and user-provided request details.
+
+AI responses must be treated as decision support, not guaranteed purchase advice. The system keeps warnings visible where relevant, especially around vehicle prices, specs, availability, route feasibility, charger access, connector compatibility, and travel planning.
+
+The backend does not expose the model runtime directly. AI recommendation requests go through the backend gateway, which forwards requests to an internal recommender service and applies request controls to protect expensive model calls.
 
 ### User Reviews And Feedback
 
@@ -124,6 +139,10 @@ GET  /api/v1/chargers/feedback-types
 POST /api/v1/chargers/{chargerId}/feedback
 GET  /api/v1/chargers/{chargerId}/feedback
 
+POST /api/v1/ai/recommendations
+GET  /api/v1/ai/recommendations/{id}
+GET  /api/v1/ai/recommendations/health
+
 POST /api/v1/leads
 POST /api/v1/contact-submissions
 ```
@@ -133,6 +152,55 @@ Public list endpoints return active records only where applicable.
 Public lead and contact retrieval APIs do not exist. Lead/contact data contains personal information and is available only through protected admin APIs.
 
 See `docs/API_CONTRACT.md` for the detailed request and response contract.
+
+### AI Recommendation Gateway APIs
+
+The AI recommendation endpoints are public frontend-facing gateway endpoints:
+
+```text
+POST /api/v1/ai/recommendations
+GET  /api/v1/ai/recommendations/{id}
+GET  /api/v1/ai/recommendations/health
+```
+
+The intended flow is:
+
+```text
+Frontend /recommend
+  -> EVReady backend API gateway
+  -> Internal AI recommender service
+  -> Model runtime
+```
+
+The frontend should call the backend gateway, not the internal recommender service directly.
+
+The backend gateway:
+
+* accepts public recommendation creation requests
+* forwards accepted requests to the internal recommender service
+* exposes polling for recommendation status/result retrieval
+* exposes a lightweight recommender health endpoint
+* applies Bucket4j rate limiting to expensive recommendation creation requests
+* leaves result polling available so accepted requests can complete normally
+
+Rate limiting applies to:
+
+```text
+POST /api/v1/ai/recommendations
+```
+
+Rate limiting does not apply to:
+
+```text
+GET /api/v1/ai/recommendations/{id}
+GET /api/v1/ai/recommendations/health
+```
+
+When the rate limit is exceeded, the backend returns:
+
+```text
+429 Too Many Requests
+```
 
 ### Protected Admin APIs
 
@@ -165,6 +233,8 @@ Public and admin APIs generally use plain JSON responses.
 * Error responses use the shared error envelope.
 * Public read APIs return `404` for missing or inactive records where applicable.
 * Frontend clients should read `fieldErrors` for validation messages.
+* AI recommendation gateway responses preserve the JSON response shape returned by the internal recommender service where applicable.
+* AI recommendation rate-limit failures return `429 Too Many Requests`.
 
 See `docs/API_CONTRACT.md` for endpoint-level details.
 
@@ -195,6 +265,18 @@ Alternatively, set `SPRING_PROFILES_ACTIVE=dev` in your shell or IDE run configu
 
 The dev profile listens on port `8080` by default.
 
+For local AI recommendation gateway testing, the internal recommender service should be running separately and reachable through:
+
+```text
+AI_RECOMMENDER_BASE_URL
+```
+
+The dev default is:
+
+```text
+http://localhost:8081
+```
+
 ## Environment Variables
 
 Spring Boot does not automatically read `.env` files. A `.env` file only works if the runtime loads it, such as Docker Compose `env_file`, Docker Compose `environment`, systemd `EnvironmentFile`, shell export, IDE run configuration, or Gradle `bootRun` environment.
@@ -208,6 +290,41 @@ DB_USER
 DB_PASS
 CORS_ALLOWED_ORIGINS
 ```
+
+### AI Recommender Gateway Variables
+
+```text
+AI_RECOMMENDER_BASE_URL
+AI_RECOMMENDER_CONNECT_TIMEOUT
+AI_RECOMMENDER_READ_TIMEOUT
+AI_RECOMMENDATION_RATE_LIMIT_MAX_REQUESTS
+AI_RECOMMENDATION_RATE_LIMIT_WINDOW
+AI_RECOMMENDATION_RATE_LIMIT_ENTRY_TTL
+```
+
+Example development values:
+
+```text
+AI_RECOMMENDER_BASE_URL=http://localhost:8081
+AI_RECOMMENDER_CONNECT_TIMEOUT=5s
+AI_RECOMMENDER_READ_TIMEOUT=95s
+AI_RECOMMENDATION_RATE_LIMIT_MAX_REQUESTS=2
+AI_RECOMMENDATION_RATE_LIMIT_WINDOW=10m
+AI_RECOMMENDATION_RATE_LIMIT_ENTRY_TTL=30m
+```
+
+Example production shape:
+
+```text
+AI_RECOMMENDER_BASE_URL=http://internal-recommender:8081
+AI_RECOMMENDER_CONNECT_TIMEOUT=5s
+AI_RECOMMENDER_READ_TIMEOUT=95s
+AI_RECOMMENDATION_RATE_LIMIT_MAX_REQUESTS=2
+AI_RECOMMENDATION_RATE_LIMIT_WINDOW=10m
+AI_RECOMMENDATION_RATE_LIMIT_ENTRY_TTL=30m
+```
+
+Do not expose the internal recommender service directly to browsers.
 
 ### Production Variables
 
@@ -230,6 +347,12 @@ LEAD_NOTIFICATION_TO
 CONTACT_NOTIFICATION_TO
 ADMIN_USERNAME
 ADMIN_PASSWORD
+AI_RECOMMENDER_BASE_URL
+AI_RECOMMENDER_CONNECT_TIMEOUT
+AI_RECOMMENDER_READ_TIMEOUT
+AI_RECOMMENDATION_RATE_LIMIT_MAX_REQUESTS
+AI_RECOMMENDATION_RATE_LIMIT_WINDOW
+AI_RECOMMENDATION_RATE_LIMIT_ENTRY_TTL
 ```
 
 Do not commit production secrets, `.env` files, SMTP credentials, database passwords, or admin credentials.
@@ -272,6 +395,32 @@ Admin authentication is used only for protected `/api/v1/admin/**` endpoints.
 
 The first version is intentionally small and uses a single admin role. Granular roles, public user auth, and complex permission models are deferred until there is a real operating need.
 
+## AI Gateway Security
+
+The AI recommendation gateway protects the public backend boundary around expensive AI work.
+
+Security shape:
+
+```text
+Browser
+  -> EVReady backend
+  -> Internal AI recommender
+  -> Model runtime
+```
+
+The backend should be the only browser-facing AI entry point.
+
+Current gateway controls include:
+
+* no direct browser access to the internal recommender service
+* backend-side request forwarding
+* configurable connect and read timeouts
+* Bucket4j rate limiting for recommendation creation
+* safe `429 Too Many Requests` response when creation quota is exceeded
+* continued support for polling already-created recommendation runs
+
+The rate limiter is in-memory. This is suitable for the current single backend instance deployment. If the backend is scaled to multiple instances, rate-limit state should move to a shared store or edge-level limiter.
+
 ## Database And Liquibase
 
 Liquibase manages schema and seed data.
@@ -301,13 +450,14 @@ See `docs/LIQUIBASE_GUIDE.md` for migration conventions.
 
 ## Production Deployment
 
-The backend is deployed separately from the frontend.
+The backend is deployed separately from the frontend and the AI recommender service.
 
 Current production shape:
 
 ```text
 Frontend: https://evready.pk
 API: https://api.evready.pk
+AI recommender: internal service behind the backend gateway
 ```
 
 Production notes:
@@ -317,6 +467,7 @@ Production notes:
 * Backend is served behind a reverse proxy.
 * HTTPS is handled outside the Spring Boot app.
 * Frontend deployment is separate.
+* AI recommender deployment is separate and should remain internal to the backend gateway.
 * Real production environment values live outside the repository.
 * Logs, backups, monitoring, and reverse proxy configuration are operational concerns outside the application code.
 
@@ -366,6 +517,7 @@ du -sh /opt/evready/logs/backend
     * `develop` to `main` for production deployment
 * Avoid committing directly to `main` after initial setup.
 * Keep deployment-related work in focused feature branches.
+* Deploy production from `main`.
 
 ## Documentation
 
@@ -400,8 +552,12 @@ Recommended reading order:
 * Do not expose PostgreSQL publicly.
 * Do not expose admin endpoints without authentication.
 * Do not expose lead/contact retrieval publicly.
+* Do not expose the internal AI recommender directly to browsers.
+* Do not expose model runtime services directly to browsers.
 * Do not log full message bodies, phone numbers, emails, credentials, or exported personal data.
 * Do not claim live charger availability.
+* Do not claim guaranteed route feasibility.
 * Do not claim field verification where only source-backed catalog data exists.
 * Keep production CORS restricted to intended frontend origins.
 * Treat lead/contact exports as sensitive operational data.
+* Treat AI recommendations as decision support, not guaranteed market or travel advice.
